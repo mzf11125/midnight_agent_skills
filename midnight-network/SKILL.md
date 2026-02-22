@@ -34,6 +34,31 @@ python scripts/network-health-check.py
 
 ## Reference Guides
 
+### Node Architecture
+See [node-architecture.md](references/node-architecture.md) for:
+- **Node types**: Full node, archive node, light client
+- **Architecture components**: Substrate framework, partner chain bridge
+- **Deployment patterns**: Single node, HA, validator, indexer
+- **Configuration**: Node config, environment variables, CLI flags
+- **Networking**: Port configuration, firewall rules, load balancing
+- **Storage management**: Disk planning, pruning strategies
+- **Monitoring**: Health checks, metrics, logging
+- **Security**: Network isolation, key management, system hardening
+- **Troubleshooting**: Common issues and solutions
+
+### Docker Deployment
+See [docker-deployment.md](references/docker-deployment.md) for:
+- **Quick start**: Single node, Docker Compose
+- **Image variants**: Official images, tags, network-specific
+- **Production deployment**: Full node, archive node, validator
+- **Multi-node setup**: HA cluster with load balancing
+- **Indexer deployment**: Archive node + PostgreSQL + GraphQL
+- **Monitoring stack**: Prometheus + Grafana
+- **Environment configuration**: .env files, secrets
+- **Management commands**: Start, stop, update, backup
+- **Troubleshooting**: Container issues, resource limits
+- **Security**: Version pinning, port binding, health checks
+
 ### Validator Operations
 See [validator-guide.md](references/validator-guide.md) for:
 - Running validators
@@ -44,11 +69,14 @@ See [validator-guide.md](references/validator-guide.md) for:
 
 ### Indexer Setup
 See [indexer-setup.md](references/indexer-setup.md) for:
-- Indexer configuration
-- Database setup
-- Version compatibility (2.0.0 - 2.1.4)
+- **Indexer v3.0.0** (current version - Jan 2026)
+- Docker deployment (recommended)
+- Database configuration
+- GraphQL API v3 features
+- Migration from v2.x (deprecated)
+- Unshielded token support
 - Performance tuning
-- Maintenance
+- Troubleshooting
 
 ### Network Configuration
 See [network-config.md](references/network-config.md) for:
@@ -57,13 +85,16 @@ See [network-config.md](references/network-config.md) for:
 - Configuration parameters
 - Substrate URI setup
 
-### Monitoring
+### Monitoring & Troubleshooting
 See [monitoring.md](references/monitoring.md) for:
-- Health checks
-- Performance metrics
-- Troubleshooting
-- Alerting
-- Best practices
+- **Health checks**: Node, indexer, validator status
+- **Prometheus metrics**: 20+ key metrics with queries
+- **Grafana dashboards**: Node, validator, indexer panels
+- **Logging**: Configuration, rotation, log levels, queries
+- **Alerting**: 10+ alert rules with Slack/Email/PagerDuty
+- **Common issues**: 6 detailed troubleshooting scenarios
+- **Performance tuning**: Node and PostgreSQL optimization
+- **Best practices**: Continuous monitoring, backups, updates
 
 ### Node Releases
 See [node-releases.md](references/node-releases.md) for:

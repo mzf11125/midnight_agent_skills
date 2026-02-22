@@ -15,6 +15,25 @@ Midnight is a zero-knowledge partner chain to Cardano that enables privacy-prese
 
 ## Core Concepts
 
+### Kachina Protocol
+**THE foundational smart contract architecture.** See [kachina-protocol.md](references/kachina-protocol.md) for:
+- Public state (on-chain) + Private state (local) model
+- Zero-knowledge proof bridge between states
+- Transcript-based concurrency mechanism
+- Universally Composable (UC) security framework
+- How contracts update both states simultaneously
+- Practical examples (private voting)
+- Integration with Compact language
+
+### Ledger Models: UTXO vs Account
+**Midnight's unique hybrid architecture.** See [ledger-models.md](references/ledger-models.md) for:
+- UTXO model (Bitcoin-style) vs Account model (Ethereum-style)
+- Ledger Tokens (UTXO-based) vs Contract Tokens (Account-based)
+- When to use each model (decision matrix)
+- Performance and privacy implications
+- Hybrid patterns combining both
+- Migration guides from Ethereum and Bitcoin
+
 ### Zero-Knowledge Proofs
 Mathematical techniques that prove computations were performed correctly without revealing the underlying data. See [zk-proofs.md](references/zk-proofs.md) for detailed explanation.
 

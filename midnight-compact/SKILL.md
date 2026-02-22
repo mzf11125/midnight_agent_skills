@@ -19,14 +19,88 @@ Compact is a purpose-built programming language for zero-knowledge smart contrac
 
 ## Quick Start
 
-### Basic Contract Structure
+### Minimal Working Contract (v0.19+)
 ```compact
-circuit myContract(private secretInput, public publicInput) {
-  // Private data hidden in proof
-  // Public data visible to all
-  // Proof shows execution was correct
+pragma language_version >= 0.19;
+import CompactStandardLibrary;
+
+// Ledger state (individual declarations)
+export ledger counter: Counter;
+export ledger owner: Bytes<32>;
+
+// Witness for private data
+witness local_secret_key(): Bytes<32>;
+
+// Circuit (returns [] not Void)
+export circuit increment(): [] {
+  counter.increment(1);
 }
 ```
+
+## Quick Syntax Reference
+
+### ✅ CORRECT vs ❌ WRONG
+
+**Pragma**:
+```compact
+✅ pragma language_version >= 0.19;
+❌ pragma language_version >= 0.16.0;  // Outdated
+```
+
+**Ledger Declarations**:
+```compact
+✅ export ledger counter: Counter;
+✅ export ledger owner: Bytes<32>;
+❌ ledger { counter: Counter; }  // Block syntax deprecated
+```
+
+**Circuit Return Types**:
+```compact
+✅ export circuit increment(): [] { ... }
+✅ export circuit getBalance(): Uint<64> { ... }
+❌ export circuit increment(): Void { ... }  // Void doesn't exist
+```
+
+**Enum Access**:
+```compact
+✅ if (choice == Choice.rock) { ... }
+❌ if (choice == Choice::rock) { ... }  // Rust-style doesn't work
+```
+
+**Witness Declarations**:
+```compact
+✅ witness local_secret_key(): Bytes<32>;
+❌ witness get_key(): Bytes<32> { return ...; }  // No body allowed
+```
+
+**Counter Operations**:
+```compact
+✅ const val = counter.read();
+❌ const val = counter.value();  // Method doesn't exist
+```
+
+**Pure Functions**:
+```compact
+✅ pure circuit helper(x: Field): Field { ... }
+❌ pure function helper(x: Field): Field { ... }  // 'function' keyword doesn't exist
+```
+
+**Disclosure in Conditionals**:
+```compact
+✅ if (disclose(witness_val == x)) { ... }
+❌ if (witness_val == x) { ... }  // Implicit disclosure error
+```
+
+### Common Mistakes to Avoid
+
+| ❌ Wrong | ✅ Correct |
+|---------|-----------|
+| `ledger { field: Type; }` | `export ledger field: Type;` |
+| `circuit fn(): Void` | `circuit fn(): []` |
+| `enum State { ... }` | `export enum State { ... }` |
+| `counter.value()` | `counter.read()` |
+| `Choice::rock` | `Choice.rock` |
+| `Cell<T>` | `Field` (Cell deprecated) |
 
 ### Project Scaffolding
 Use `scripts/init-compact-project.py` to create new projects with proper structure.
@@ -38,6 +112,47 @@ Use `scripts/generate-contract.py` to generate boilerplate from templates.
 Use `scripts/compile-compact.py` for compilation with error handling.
 
 ## Language Reference
+
+### Quick Start
+See [quick-start.md](references/quick-start.md) for:
+- **Your first contract in 10 minutes**: Complete walkthrough
+- **Step-by-step guide**: From installation to deployment
+- **Working example**: Counter contract with tests
+- **Common issues**: Troubleshooting compilation and deployment
+- **Next steps**: Adding features and learning more
+
+### TypeScript Interop
+See [typescript-interop.md](references/typescript-interop.md) for:
+- **Type mappings**: Compact types → TypeScript types
+- **Generated code**: Working with Contract class
+- **Witnesses**: Implementing witness functions
+- **Circuit calls**: Calling circuits from TypeScript
+- **Enums and structs**: Using user-defined types
+- **Collections**: Vector, List, Maybe, Either
+- **Best practices**: Type safety, BigInt handling
+
+### Type System
+See [type-system.md](references/type-system.md) for:
+- **Primitive types**: Boolean, Uint, Field, tuples, vectors, Bytes, Opaque
+- **User-defined types**: struct, enum, generic types
+- **Subtyping rules**: Implicit conversions, least upper bounds
+- **Type annotations**: Required vs optional
+- **Default values**: Every type has a default
+- **Type conversions**: Complete conversion table
+- **TypeScript mappings**: Runtime representations
+- **Generic types**: Type and size parameters
+- **Best practices**: Type safety patterns
+
+### Ledger Operations
+See [ledger-operations.md](references/ledger-operations.md) for:
+- **7 ledger state types**: Cell, Counter, Set, Map, List, MerkleTree, HistoricMerkleTree
+- **Operations for each type**: Read, write, insert, lookup, increment, etc.
+- **Syntactic sugar**: Shorthand for common operations
+- **Nested state types**: Map<K, Counter>, Map<K, Map<K2, V>>
+- **Sealed fields**: Immutable after constructor
+- **Disclosure**: Making private data public
+- **Complete examples**: Token contract, access control
+- **Best practices**: Initialization, existence checks, optimization
 
 ### Basics
 See [language-basics.md](references/language-basics.md) for:
@@ -74,7 +189,17 @@ See [best-practices.md](references/best-practices.md) for:
 - Security guidelines
 - Performance optimization
 - Testing strategies
+- Common mistakes (10 detailed patterns)
 - Formal verification approaches
+
+## Contract Deployment
+
+See [contract-deployment.md](references/contract-deployment.md) for:
+- **Local deployment**: Compile and deploy to local testnet
+- **Testnet deployment**: Deploy to Midnight testnet
+- **Mainnet deployment**: Production deployment checklist
+- **Deployment scripts**: Automated bash and TypeScript scripts
+- **Troubleshooting**: Common compilation and deployment issues
 
 ## Contract Templates
 
