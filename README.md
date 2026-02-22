@@ -1,6 +1,21 @@
 # Midnight Network Agent Skills
 
+<div align="center">
+
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Skills](https://img.shields.io/badge/skills-4-orange.svg)
+![Docs](https://img.shields.io/badge/docs-37_references-purple.svg)
+![Coverage](https://img.shields.io/badge/coverage-70%25-brightgreen.svg)
+![Status](https://img.shields.io/badge/status-production--ready-success.svg)
+
 Complete set of 4 modular agent skills for building on Midnight Network's zero-knowledge blockchain.
+
+[Quick Start](#quick-start) • [Documentation](#available-skills) • [Contributing](CONTRIBUTING.md) • [License](LICENSE)
+
+</div>
+
+---
 
 **Status**: Production-Ready | **Coverage**: 70% of official docs | **Last Updated**: 2026-02-22
 
@@ -250,10 +265,36 @@ These skills enable AI agents to:
 - [Midnight Network API Reference](https://docs.midnight.network/api-reference)
 - [Midnight Network SDKs](https://docs.midnight.network/sdks)
 
+## Contributing
+
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+- 🐛 [Report a bug](https://github.com/yourusername/midnight-agent-skills/issues)
+- 💡 [Request a feature](https://github.com/yourusername/midnight-agent-skills/issues)
+- 📖 [Improve documentation](https://github.com/yourusername/midnight-agent-skills/pulls)
+
 ## License
 
-MIT
+MIT License - see [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- **Midnight Network Team** - Official documentation and specifications
+- **Contributors** - See [CONTRIBUTORS.md](CONTRIBUTORS.md)
+- **Community** - Feedback and testing
+
+## Support
+
+- 📚 [Documentation](https://github.com/yourusername/midnight-agent-skills)
+- 💬 [Discussions](https://github.com/yourusername/midnight-agent-skills/discussions)
+- 🐛 [Issues](https://github.com/yourusername/midnight-agent-skills/issues)
 
 ---
 
-Created: 2026-02-22
+<div align="center">
+
+**Made with ❤️ for the Midnight Network community**
+
+[⬆ Back to top](#midnight-network-agent-skills)
+
+</div>

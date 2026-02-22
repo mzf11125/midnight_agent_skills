@@ -1,33 +1,62 @@
 {
-  "name": "@midnight-network/agent-skills",
+  "name": "midnight-agent-skills",
   "version": "1.0.0",
-  "description": "Complete set of modular agent skills for building on Midnight Network",
-  "main": "skillsrc.json",
-  "files": [
-    "midnight-concepts/",
-    "midnight-compact/",
-    "midnight-api/",
-    "midnight-network/",
-    "skillsrc.json",
-    "README.md"
-  ],
+  "description": "Complete set of 4 modular agent skills for building on Midnight Network's zero-knowledge blockchain",
   "keywords": [
     "midnight",
+    "midnight-network",
     "zero-knowledge",
+    "zk-proofs",
     "blockchain",
-    "agent-skills",
-    "ai",
+    "smart-contracts",
     "compact",
-    "zk-proofs"
+    "agent-skills",
+    "ai-skills",
+    "privacy",
+    "cryptography"
   ],
-  "author": "Midnight Network Community",
+  "author": {
+    "name": "Zidan",
+    "email": "mzidanfatonie@tawf.xyz"
+  },
+  "contributors": [
+    {
+      "name": "Zidan",
+      "email": "mzidanfatonie@tawf.xyz"
+    }
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/midnight_agent_skills.git"
+    "url": "https://github.com/yourusername/midnight-agent-skills.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/midnight_agent_skills/issues"
+    "url": "https://github.com/yourusername/midnight-agent-skills/issues"
   },
-  "homepage": "https://github.com/yourusername/midnight_agent_skills#readme"
+  "homepage": "https://github.com/yourusername/midnight-agent-skills#readme",
+  "skills": [
+    {
+      "name": "midnight-concepts",
+      "path": "midnight-concepts",
+      "description": "Foundational knowledge about Midnight's zero-knowledge blockchain"
+    },
+    {
+      "name": "midnight-compact",
+      "path": "midnight-compact",
+      "description": "Complete guide to the Compact programming language"
+    },
+    {
+      "name": "midnight-api",
+      "path": "midnight-api",
+      "description": "API integration for building DApps on Midnight"
+    },
+    {
+      "name": "midnight-network",
+      "path": "midnight-network",
+      "description": "Network infrastructure, validators, and operations"
+    }
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
