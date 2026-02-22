@@ -1,8 +1,21 @@
 # Midnight Network Agent Skills
 
-Complete set of 4 modular agent skills for building on Midnight Network.
+Complete set of 4 modular agent skills for building on Midnight Network's zero-knowledge blockchain.
 
-## Created Skills
+## Quick Start
+
+```bash
+# Install all skills
+npx skills add midnight-agent-skills
+
+# Or install individual skills
+npx skills add midnight-agent-skills/midnight-concepts
+npx skills add midnight-agent-skills/midnight-compact
+npx skills add midnight-agent-skills/midnight-api
+npx skills add midnight-agent-skills/midnight-network
+```
+
+## Available Skills
 
 ### 1. midnight-concepts.skill (20KB)
 **Purpose**: Foundational knowledge about Midnight's zero-knowledge blockchain technology
@@ -69,26 +82,31 @@ Complete set of 4 modular agent skills for building on Midnight Network.
 
 ---
 
+## What You Can Build
+
+These skills enable AI agents to:
+- **Explain** Midnight's zero-knowledge architecture and privacy mechanisms
+- **Write** Compact smart contracts with ZK circuit patterns
+- **Integrate** wallet connections, private transactions, and blockchain APIs
+- **Deploy** validators, indexers, and network infrastructure
+- **Generate** boilerplate code, templates, and configurations
+- **Troubleshoot** issues with best practices and monitoring tools
+
 ## Installation
 
 ### Using skills.sh (Recommended)
 
-Install all skills at once:
 ```bash
+# Install all skills
 npx skills add midnight-agent-skills
-```
 
-Or install individual skills:
-```bash
-npx skills add midnight-agent-skills/midnight-concepts
+# Install specific skill
 npx skills add midnight-agent-skills/midnight-compact
-npx skills add midnight-agent-skills/midnight-api
-npx skills add midnight-agent-skills/midnight-network
 ```
 
 ### Manual Installation
 
-Each .skill file can be manually installed into AI agent systems that support the skill format.
+Download `.skill` files from releases and add them to your AI agent system that supports the skill format.
 
 ## Usage
 
@@ -100,15 +118,7 @@ These skills enable AI agents to:
 - Generate code, scripts, and configurations
 - Troubleshoot issues and provide best practices
 
-## Source Documentation
-
-Skills created from:
-- https://docs.midnight.network/llms.txt
-- https://docs.midnight.network/api-reference
-- https://docs.midnight.network/sdks
-- Official Midnight Network documentation
-
-## Skill Features
+## Skill Architecture
 
 ### Scripts (Executable)
 - Project initialization
@@ -129,7 +139,7 @@ Skills created from:
 - Configuration files
 - Project boilerplate
 
-## Development Approach
+## Design Principles
 
 - **Modular**: Each skill focuses on a specific domain
 - **Comprehensive**: Covers concepts, development, APIs, and infrastructure
@@ -137,6 +147,16 @@ Skills created from:
 - **Progressive**: Uses progressive disclosure (metadata → SKILL.md → references)
 - **Concise**: SKILL.md files under 500 lines, detailed content in references
 
-## Created: 2026-02-22
+## Resources
 
-All skills validated and packaged successfully.
+- [Midnight Network Documentation](https://docs.midnight.network)
+- [Midnight Network API Reference](https://docs.midnight.network/api-reference)
+- [Midnight Network SDKs](https://docs.midnight.network/sdks)
+
+## License
+
+MIT
+
+---
+
+Created: 2026-02-22
