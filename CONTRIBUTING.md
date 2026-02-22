@@ -51,7 +51,7 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/midnight-agent-skills.git
+git clone https://github.com/mzf11125/midnight-agent-skills.git
 cd midnight-agent-skills
 
 # No build step required - pure markdown documentation

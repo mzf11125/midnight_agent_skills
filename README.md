@@ -269,9 +269,9 @@ These skills enable AI agents to:
 
 We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-- 🐛 [Report a bug](https://github.com/yourusername/midnight-agent-skills/issues)
-- 💡 [Request a feature](https://github.com/yourusername/midnight-agent-skills/issues)
-- 📖 [Improve documentation](https://github.com/yourusername/midnight-agent-skills/pulls)
+- 🐛 [Report a bug](https://github.com/mzf11125/midnight-agent-skills/issues)
+- 💡 [Request a feature](https://github.com/mzf11125/midnight-agent-skills/issues)
+- 📖 [Improve documentation](https://github.com/mzf11125/midnight-agent-skills/pulls)
 
 ## License
 
@@ -285,9 +285,9 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Support
 
-- 📚 [Documentation](https://github.com/yourusername/midnight-agent-skills)
-- 💬 [Discussions](https://github.com/yourusername/midnight-agent-skills/discussions)
-- 🐛 [Issues](https://github.com/yourusername/midnight-agent-skills/issues)
+- 📚 [Documentation](https://github.com/mzf11125/midnight-agent-skills)
+- 💬 [Discussions](https://github.com/mzf11125/midnight-agent-skills/discussions)
+- 🐛 [Issues](https://github.com/mzf11125/midnight-agent-skills/issues)
 
 ---
 
