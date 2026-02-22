@@ -1,0 +1,35 @@
+contract PrivateToken {
+  state {
+    commitments: Map<Field, Bool>,
+    nullifiers: Map<Field, Bool>,
+    totalSupply: Field
+  }
+  
+  init(supply: Field) {
+    totalSupply = supply;
+  }
+  
+  circuit mint(
+    private amount: Field,
+    private owner: Field,
+    public commitment: Field
+  ) {
+    require(!commitments[commitment]);
+    require(commitment == commit(amount, owner));
+    commitments[commitment] = true;
+  }
+  
+  circuit transfer(
+    private inputAmount: Field,
+    private inputOwner: Field,
+    private inputNullifier: Field,
+    private outputAmount: Field,
+    private outputOwner: Field,
+    public outputCommitment: Field
+  ) {
+    require(!nullifiers[inputNullifier]);
+    require(inputAmount == outputAmount);
+    nullifiers[inputNullifier] = true;
+    commitments[outputCommitment] = true;
+  }
+}

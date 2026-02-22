@@ -1,0 +1,5 @@
+{
+  "name": "midnight-network",
+  "description": "Network infrastructure, validators, and operations",
+  "tags": ["midnight", "validator", "indexer", "infrastructure", "operations"]
+}

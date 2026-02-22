@@ -1,0 +1,30 @@
+network:
+  id: testnet
+  listen: 0.0.0.0:30333
+  external: YOUR_PUBLIC_IP:30333
+  bootnodes:
+    - /dns4/bootnode1.testnet.midnight.network/tcp/30333/p2p/12D3KooW...
+    - /dns4/bootnode2.testnet.midnight.network/tcp/30333/p2p/12D3KooW...
+
+validator:
+  enabled: true
+  keys: /path/to/validator-keys.json
+  stake: 1000000
+
+rpc:
+  enabled: true
+  port: 9933
+  cors: ["*"]
+
+ws:
+  enabled: true
+  port: 9944
+  cors: ["*"]
+
+telemetry:
+  enabled: true
+  url: wss://telemetry.midnight.network/submit
+
+logging:
+  level: info
+  file: /var/log/midnight-node/validator.log

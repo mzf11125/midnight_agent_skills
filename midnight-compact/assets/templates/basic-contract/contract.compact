@@ -1,0 +1,20 @@
+contract BasicContract {
+  state {
+    owner: Address,
+    value: U32
+  }
+  
+  init(initialValue: U32) {
+    owner = msg.sender;
+    value = initialValue;
+  }
+  
+  pub fn getValue() -> U32 {
+    value
+  }
+  
+  pub fn setValue(newValue: U32) {
+    require(msg.sender == owner);
+    value = newValue;
+  }
+}

@@ -1,0 +1,26 @@
+network:
+  id: testnet
+  listen: 0.0.0.0:30333
+  external: YOUR_PUBLIC_IP:30333
+  bootnodes:
+    - /dns4/bootnode1.testnet.midnight.network/tcp/30333/p2p/12D3KooW...
+
+rpc:
+  enabled: true
+  port: 9933
+  cors: ["*"]
+  max_connections: 100
+
+ws:
+  enabled: true
+  port: 9944
+  cors: ["*"]
+  max_connections: 100
+
+database:
+  path: /var/lib/midnight-node/db
+  cache_size: 1024
+
+logging:
+  level: info
+  file: /var/log/midnight-node/node.log

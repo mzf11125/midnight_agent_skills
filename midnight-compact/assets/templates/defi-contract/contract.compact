@@ -1,0 +1,25 @@
+contract PrivateDEX {
+  state {
+    liquidity: Map<Field, Field>,
+    swapCount: U64
+  }
+  
+  circuit privateSwap(
+    private inputToken: Field,
+    private inputAmount: Field,
+    private outputToken: Field,
+    private outputAmount: Field,
+    public rate: Field
+  ) {
+    require(outputAmount == inputAmount * rate);
+    require(liquidity[outputToken] >= outputAmount);
+    
+    liquidity[inputToken] += inputAmount;
+    liquidity[outputToken] -= outputAmount;
+    swapCount += 1;
+  }
+  
+  pub fn addLiquidity(token: Field, amount: Field) {
+    liquidity[token] += amount;
+  }
+}

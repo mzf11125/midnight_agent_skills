@@ -1,0 +1,33 @@
+{
+  "name": "@midnight-network/agent-skills",
+  "version": "1.0.0",
+  "description": "Complete set of modular agent skills for building on Midnight Network",
+  "main": "skillsrc.json",
+  "files": [
+    "midnight-concepts/",
+    "midnight-compact/",
+    "midnight-api/",
+    "midnight-network/",
+    "skillsrc.json",
+    "README.md"
+  ],
+  "keywords": [
+    "midnight",
+    "zero-knowledge",
+    "blockchain",
+    "agent-skills",
+    "ai",
+    "compact",
+    "zk-proofs"
+  ],
+  "author": "Midnight Network Community",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/midnight_agent_skills.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/midnight_agent_skills/issues"
+  },
+  "homepage": "https://github.com/yourusername/midnight_agent_skills#readme"
+}

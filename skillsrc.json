@@ -1,0 +1,13 @@
+{
+  "name": "midnight-agent-skills",
+  "version": "1.0.0",
+  "description": "Complete set of modular agent skills for building on Midnight Network",
+  "author": "Midnight Network Community",
+  "repository": "https://github.com/yourusername/midnight_agent_skills",
+  "skills": [
+    "midnight-concepts",
+    "midnight-compact",
+    "midnight-api",
+    "midnight-network"
+  ]
+}

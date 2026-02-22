@@ -1,0 +1,24 @@
+database:
+  host: localhost
+  port: 5432
+  name: midnight_indexer
+  user: indexer
+  password: CHANGE_ME
+
+node:
+  rpc_url: http://localhost:9933
+  ws_url: ws://localhost:9944
+
+indexing:
+  start_block: 0
+  batch_size: 100
+  workers: 4
+
+api:
+  port: 3000
+  cors: ["*"]
+  graphql_playground: true
+
+logging:
+  level: info
+  file: /var/log/midnight-indexer/indexer.log

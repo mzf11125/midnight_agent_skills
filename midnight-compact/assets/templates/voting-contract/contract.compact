@@ -1,0 +1,35 @@
+contract PrivateVoting {
+  state {
+    voteCount: Map<U32, U32>,
+    hasVoted: Map<Field, Bool>,
+    votingOpen: Bool
+  }
+  
+  init() {
+    votingOpen = true;
+  }
+  
+  circuit vote(
+    private voterId: Field,
+    private candidate: U32,
+    public nullifier: Field
+  ) {
+    require(votingOpen);
+    require(!hasVoted[nullifier]);
+    require(nullifier == hash(voterId));
+    require(candidate < 10);
+    
+    hasVoted[nullifier] = true;
+    voteCount[candidate] += 1;
+  }
+  
+  pub fn closeVoting() {
+    require(msg.sender == owner);
+    votingOpen = false;
+  }
+  
+  pub fn getResults() -> Map<U32, U32> {
+    require(!votingOpen);
+    voteCount
+  }
+}
