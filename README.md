@@ -21,13 +21,13 @@ Complete set of 4 modular agent skills for building on Midnight Network's zero-k
 
 ```bash
 # Install all skills
-npx skills add midnight-agent-skills
+npx skills add https://github.com/mzf11125/midnight_agent_skills
 
 # Or install individual skills
-npx skills add midnight-agent-skills/midnight-concepts
-npx skills add midnight-agent-skills/midnight-compact
-npx skills add midnight-agent-skills/midnight-api
-npx skills add midnight-agent-skills/midnight-network
+npx skills add https://github.com/mzf11125/midnight_agent_skills --skill midnight-concepts
+npx skills add https://github.com/mzf11125/midnight_agent_skills --skill midnight-compact
+npx skills add https://github.com/mzf11125/midnight_agent_skills --skill midnight-api
+npx skills add https://github.com/mzf11125/midnight_agent_skills --skill midnight-network
 ```
 
 ## Available Skills
