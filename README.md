@@ -15,6 +15,8 @@ Complete set of 4 modular agent skills for building on Midnight Network's zero-k
 
 </div>
 
+This project extends the Midnight Network with additional developer tooling.
+
 ---
 
 ## Quick Start
