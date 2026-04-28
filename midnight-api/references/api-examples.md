@@ -38,7 +38,7 @@ async function connectWallet() {
     : await showWalletSelector(compatibleWallets);
   
   // 5. Connect to selected wallet
-  const networkId = NetworkId('testnet');
+  const networkId = NetworkId('preprod');
   const connectedAPI = await selectedWallet.connect(networkId);
   
   // 6. Verify connection
@@ -257,7 +257,7 @@ async function delegateProving() {
 import { getBlock, getTransaction, getBalance } from '@midnight-ntwrk/ledger';
 
 async function queryBlockchainData() {
-  const indexerUri = 'https://indexer.testnet.midnight.network';
+  const indexerUri = 'https://indexer.preprod.midnight.network';
   
   // 1. Get latest block
   const latestBlock = await getLatestBlock(indexerUri);
@@ -301,7 +301,7 @@ async function interactWithContract(contractAddress: string) {
   // 2. Create contract instance
   const contract = new Contract({
     address: contractAddress,
-    network: 'testnet',
+    network: 'preprod',
     wallet: api
   });
   
@@ -372,7 +372,7 @@ async function multiTokenTransfer(
 import { getEvents } from '@midnight-ntwrk/ledger';
 
 async function listenToContractEvents(contractAddress: string) {
-  const indexerUri = 'https://indexer.testnet.midnight.network';
+  const indexerUri = 'https://indexer.preprod.midnight.network';
   let lastBlock = await getLatestBlock(indexerUri);
   
   console.log('Listening for events...');

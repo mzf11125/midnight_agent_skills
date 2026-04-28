@@ -192,7 +192,7 @@ An interface for querying contract state and running on-chain VM programs.
 Runtime representation of Compact programming language data types.
 
 ### Network ID
-Identifier for different Midnight networks (mainnet, testnet, etc.).
+Identifier for different Midnight networks (mainnet, preprod, etc.).
 
 ### Proof Stage
 The state of a transaction component: unproven, proven, or proof-erased.
@@ -267,7 +267,7 @@ Average time between block production.
 
 ## Development Concepts
 
-### Testnet
+### Preprod
 A test network for development and testing without real value.
 
 ### Mainnet

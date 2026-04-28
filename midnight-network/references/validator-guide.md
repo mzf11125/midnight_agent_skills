@@ -109,4 +109,4 @@ Slashing results in:
 3. **Security**: Secure validator keys, use firewalls
 4. **Updates**: Keep node software up to date
 5. **Backup**: Backup keys and configuration
-6. **Testing**: Test on testnet first
+6. **Testing**: Test on preprod first

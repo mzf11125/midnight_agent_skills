@@ -2,7 +2,7 @@
 
 ## Overview
 
-Complete guide to deploying Compact smart contracts to Midnight Network. Covers local development, testnet deployment, and production mainnet deployment.
+Complete guide to deploying Compact smart contracts to Midnight Network. Covers local development, preprod deployment, and production mainnet deployment.
 
 ## Prerequisites
 
@@ -87,35 +87,35 @@ const contractAddress = await deployContract({
 console.log('Contract deployed:', contractAddress);
 ```
 
-## Testnet Deployment
+## Preprod Deployment
 
 ### 1. Configure Environment
 
 Create `.env`:
 ```env
-MIDNIGHT_NETWORK=testnet
+MIDNIGHT_NETWORK=preprod
 MIDNIGHT_MNEMONIC="your twelve word mnemonic phrase here"
 MIDNIGHT_WALLET_ADDRESS="your_wallet_address"
 
 # Network endpoints
-MIDNIGHT_NODE_URL=wss://rpc.testnet.midnight.network
-MIDNIGHT_INDEXER_URL=https://indexer.testnet.midnight.network
-MIDNIGHT_PROOF_SERVER_URL=https://proof.testnet.midnight.network
+MIDNIGHT_NODE_URL=wss://rpc.preprod.midnight.network
+MIDNIGHT_INDEXER_URL=https://indexer.preprod.midnight.network
+MIDNIGHT_PROOF_SERVER_URL=https://proof.preprod.midnight.network
 ```
 
 ### 2. Get Test Tokens
 
-Visit [Midnight Faucet](https://faucet.testnet.midnight.network/):
+Visit [Midnight Faucet](https://faucet.preprod.midnight.network/):
 1. Enter your wallet address
 2. Request tDUST tokens
 3. Wait for confirmation (~30 seconds)
 
 **Check balance**:
 ```bash
-midnight-cli balance --network testnet
+midnight-cli balance --network preprod
 ```
 
-### 3. Deploy to Testnet
+### 3. Deploy to Preprod
 
 ```bash
 # Compile contract
@@ -124,7 +124,7 @@ compact build
 # Deploy
 midnight-cli deploy \
   --contract build/contract.wasm \
-  --network testnet \
+  --network preprod \
   --wallet-mnemonic "$MIDNIGHT_MNEMONIC"
 ```
 
@@ -132,7 +132,7 @@ midnight-cli deploy \
 ```bash
 midnight-cli deploy \
   --contract build/contract.wasm \
-  --network testnet \
+  --network preprod \
   --wallet-mnemonic "$MIDNIGHT_MNEMONIC" \
   --init-params '{"owner": "0x1234...", "initialValue": 100}'
 ```
@@ -143,13 +143,13 @@ midnight-cli deploy \
 # Check contract exists
 midnight-cli contract-info \
   --address <contract-address> \
-  --network testnet
+  --network preprod
 
 # Query contract state
 midnight-cli query \
   --contract <contract-address> \
   --method getState \
-  --network testnet
+  --network preprod
 ```
 
 ## Mainnet Deployment
@@ -158,7 +158,7 @@ midnight-cli query \
 
 - [ ] Contract audited by security firm
 - [ ] All tests passing (unit, integration, e2e)
-- [ ] Testnet deployment successful
+- [ ] Preprod deployment successful
 - [ ] Gas costs estimated
 - [ ] Wallet funded with sufficient DUST
 - [ ] Backup of deployment keys
@@ -233,10 +233,10 @@ case $NETWORK in
       --network local \
       --wallet dev
     ;;
-  testnet)
+  preprod)
     midnight-cli deploy \
       --contract build/contract.wasm \
-      --network testnet \
+      --network preprod \
       --wallet-mnemonic "$MIDNIGHT_MNEMONIC"
     ;;
   mainnet)
@@ -267,8 +267,8 @@ echo "✅ Deployment complete!"
 # Deploy to local
 ./deploy.sh local
 
-# Deploy to testnet
-./deploy.sh testnet ./my-contract
+# Deploy to preprod
+./deploy.sh preprod ./my-contract
 
 # Deploy to mainnet
 ./deploy.sh mainnet ./my-contract
@@ -330,8 +330,8 @@ deploy(network).catch(console.error);
 # Deploy to local
 npx ts-node deploy.ts local
 
-# Deploy to testnet
-npx ts-node deploy.ts testnet
+# Deploy to preprod
+npx ts-node deploy.ts preprod
 
 # Deploy to mainnet
 npx ts-node deploy.ts mainnet
@@ -350,14 +350,14 @@ const config = {
 };
 ```
 
-### Testnet
+### Preprod
 
 ```typescript
 const config = {
-  networkId: 'testnet',
-  node: 'wss://rpc.testnet.midnight.network',
-  indexer: 'https://indexer.testnet.midnight.network',
-  proofServer: 'https://proof.testnet.midnight.network'
+  networkId: 'preprod',
+  node: 'wss://rpc.preprod.midnight.network',
+  indexer: 'https://indexer.preprod.midnight.network',
+  proofServer: 'https://proof.preprod.midnight.network'
 };
 ```
 
@@ -379,7 +379,7 @@ const config = {
 After deployment, update frontend `.env`:
 ```env
 VITE_CONTRACT_ADDRESS=0x1234567890abcdef...
-VITE_NETWORK=testnet
+VITE_NETWORK=preprod
 ```
 
 ### Connect to Contract
@@ -427,13 +427,13 @@ Error: Insufficient balance for deployment
 **Solution**:
 ```bash
 # Check balance
-midnight-cli balance --network testnet
+midnight-cli balance --network preprod
 
 # Get test tokens
-open https://faucet.testnet.midnight.network
+open https://faucet.preprod.midnight.network
 
 # Wait for confirmation
-midnight-cli balance --network testnet --watch
+midnight-cli balance --network preprod --watch
 ```
 
 ### Proof Server Timeout
@@ -474,7 +474,7 @@ Error: Failed to connect to node
 curl https://status.midnight.network
 
 # Try different endpoint
-MIDNIGHT_NODE_URL=wss://rpc2.testnet.midnight.network
+MIDNIGHT_NODE_URL=wss://rpc2.preprod.midnight.network
 
 # Check firewall/proxy settings
 ```
@@ -515,11 +515,11 @@ midnight-cli deploy --wallet-mnemonic "$MIDNIGHT_MNEMONIC"
 midnight-cli deploy --wallet-mnemonic "word1 word2 ..."
 ```
 
-### 2. Test on Testnet First
+### 2. Test on Preprod First
 
 ```bash
-# Always deploy to testnet before mainnet
-./deploy.sh testnet
+# Always deploy to preprod before mainnet
+./deploy.sh preprod
 # Test thoroughly
 ./deploy.sh mainnet
 ```
@@ -552,5 +552,5 @@ midnight-cli logs --contract $ADDRESS --follow
 - **Deployment Guide**: https://docs.midnight.network/guides/deployment
 - **Network Configuration**: See network-configuration.md
 - **Contract Examples**: See contract-examples.md (midnight-compact)
-- **Testnet Faucet**: https://faucet.testnet.midnight.network
+- **Preprod Faucet**: https://faucet.preprod.midnight.network
 - **Mainnet Explorer**: https://explorer.midnight.network

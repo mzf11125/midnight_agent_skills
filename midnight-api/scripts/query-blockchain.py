@@ -3,7 +3,7 @@
 import requests
 import sys
 
-INDEXER_URL = "https://indexer.testnet.midnight.network/graphql"
+INDEXER_URL = "https://indexer.preprod.midnight.network/graphql"
 
 QUERIES = {
     "latest-block": '''

@@ -100,17 +100,17 @@ Run test:
 npx ts-node test.ts
 ```
 
-### Step 5: Deploy to Testnet
+### Step 5: Deploy to Preprod
 
 ```bash
 # Set environment
-export MIDNIGHT_NETWORK=testnet
+export MIDNIGHT_NETWORK=preprod
 export MIDNIGHT_MNEMONIC="your twelve word mnemonic here"
 
 # Deploy
 midnight-cli deploy \
   --contract build/counter.wasm \
-  --network testnet
+  --network preprod
 ```
 
 **Output**:
@@ -127,7 +127,7 @@ import { Contract } from '@midnight-ntwrk/midnight-js-contracts';
 
 const contract = new Contract({
   address: '0x1234567890abcdef...',
-  network: 'testnet',
+  network: 'preprod',
   wallet: connectedWallet
 });
 
@@ -204,7 +204,7 @@ compact update +0.19.0
 ### Deployment Error: "Insufficient funds"
 ```bash
 # Get test tokens
-open https://faucet.testnet.midnight.network
+open https://faucet.preprod.midnight.network
 ```
 
 ## Complete Example Repository
@@ -222,7 +222,7 @@ npm test
 ✅ A working Compact smart contract  
 ✅ Compiled to WebAssembly + ZK circuits  
 ✅ Tested locally  
-✅ Deployed to testnet  
+✅ Deployed to preprod  
 ✅ Interacted with from TypeScript  
 
 **Time**: ~10 minutes  

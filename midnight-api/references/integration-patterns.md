@@ -10,7 +10,7 @@ Common patterns for integrating Midnight Network APIs into DApps. Covers error h
 
 ```typescript
 try {
-  const api = await window.midnight.wallet.connect('testnet');
+  const api = await window.midnight.wallet.connect('preprod');
   const tx = await api.makeTransfer([...]);
   await api.submitTransaction(tx);
 } catch (error) {
@@ -327,7 +327,7 @@ async function connectWallet(
     const wallet = wallets.find(w => w.id === preferredWallet);
     if (wallet) {
       try {
-        return await wallet.connect('testnet');
+        return await wallet.connect('preprod');
       } catch (error) {
         console.warn(`Failed to connect to ${preferredWallet}:`, error);
       }
@@ -336,7 +336,7 @@ async function connectWallet(
   
   // Show wallet selection UI
   const selectedWallet = await showWalletSelector(wallets);
-  return await selectedWallet.connect('testnet');
+  return await selectedWallet.connect('preprod');
 }
 ```
 
@@ -406,7 +406,7 @@ connection.onConnectionChange((connected) => {
   updateUI(connected);
 });
 
-await connection.connect('testnet');
+await connection.connect('preprod');
 ```
 
 ## Transaction Patterns
@@ -771,8 +771,8 @@ class MidnightDApp {
 
 // Usage
 const dapp = new MidnightDApp(
-  'https://indexer.testnet.midnight.network',
-  'testnet'
+  'https://indexer.preprod.midnight.network',
+  'preprod'
 );
 
 await dapp.initialize();

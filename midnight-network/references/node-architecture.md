@@ -268,8 +268,8 @@ url = "wss://telemetry.midnight.network/submit"
 
 ```bash
 # Network
-MIDNIGHT_NETWORK=testnet
-MIDNIGHT_CHAIN=midnight-testnet-02
+MIDNIGHT_NETWORK=preprod
+MIDNIGHT_CHAIN=midnight-preprod
 
 # Ports
 MIDNIGHT_P2P_PORT=30333
@@ -290,7 +290,7 @@ MIDNIGHT_VALIDATOR_KEY=/keys/validator.key
 ```bash
 # Full node
 midnight-node \
-  --chain testnet \
+  --chain preprod \
   --base-path /data \
   --rpc-port 9933 \
   --ws-port 9944 \
@@ -299,7 +299,7 @@ midnight-node \
 
 # Validator
 midnight-node \
-  --chain testnet \
+  --chain preprod \
   --validator \
   --name "My Validator" \
   --base-path /data \
@@ -393,13 +393,13 @@ server {
 
 ```bash
 # Compact database
-midnight-node purge-chain --chain testnet
+midnight-node purge-chain --chain preprod
 
 # Export state snapshot
-midnight-node export-state --chain testnet --at <block-hash>
+midnight-node export-state --chain preprod --at <block-hash>
 
 # Import state snapshot
-midnight-node import-state --chain testnet snapshot.json
+midnight-node import-state --chain preprod snapshot.json
 ```
 
 ## Monitoring
@@ -539,7 +539,7 @@ curl http://localhost:9933 -H "Content-Type: application/json" \
 --bootnodes /dns/bootnode-1.midnight.network/tcp/30333/p2p/...
 
 # Reset database
-midnight-node purge-chain --chain testnet
+midnight-node purge-chain --chain preprod
 ```
 
 ### High Memory Usage

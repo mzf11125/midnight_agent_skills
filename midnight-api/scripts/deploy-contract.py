@@ -4,7 +4,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-def deploy_contract(contract_file, network="testnet"):
+def deploy_contract(contract_file, network="preprod"):
     if not Path(contract_file).exists():
         print(f"❌ Contract file not found: {contract_file}")
         return False
@@ -36,5 +36,5 @@ if __name__ == "__main__":
         sys.exit(1)
     
     contract = sys.argv[1]
-    network = sys.argv[2] if len(sys.argv) > 2 else "testnet"
+    network = sys.argv[2] if len(sys.argv) > 2 else "preprod"
     deploy_contract(contract, network)

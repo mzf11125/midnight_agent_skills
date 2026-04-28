@@ -250,7 +250,7 @@ if (error.code === 'NETWORK_ERROR') {
 ```typescript
 {
   current: 'mainnet',
-  supported: ['testnet', 'preprod']
+  supported: ['preprod', 'preprod']
 }
 ```
 

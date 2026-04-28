@@ -18,7 +18,7 @@ yarn add @midnight-ntwrk/ledger
 import { setNetworkId, NetworkId } from '@midnight-ntwrk/ledger';
 
 // Set network before operations
-setNetworkId(NetworkId.TestNet);
+setNetworkId(NetworkId("preprod"));
 ```
 
 ## Token Types
@@ -68,7 +68,7 @@ console.log(`${tokenInfo.symbol}: ${tokenInfo.totalSupply}`);
 ```typescript
 import { submitTransaction } from '@midnight-ntwrk/ledger';
 
-const nodeUri = 'https://rpc.testnet.midnight.network';
+const nodeUri = 'https://rpc.preprod.midnight.network';
 
 // Submit signed transaction
 const txHash = await submitTransaction(signedTx, nodeUri);
@@ -466,7 +466,7 @@ import {
 
 async function queryBlockData(indexerUri: string) {
   // 1. Set network
-  setNetworkId(NetworkId.TestNet);
+  setNetworkId(NetworkId("preprod"));
   
   // 2. Get latest block
   const latestBlock = await getLatestBlock(indexerUri);
@@ -517,7 +517,7 @@ async function sendTransaction(
   indexerUri: string
 ) {
   // 1. Set network
-  setNetworkId(NetworkId.TestNet);
+  setNetworkId(NetworkId("preprod"));
   
   // 2. Get gas price
   const gasPrice = await getGasPrice(nodeUri);

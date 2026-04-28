@@ -158,7 +158,7 @@ describe('Contract Integration', () => {
   let wallet: Wallet;
   
   beforeAll(async () => {
-    // Deploy contract to local testnet
+    // Deploy contract to local preprod
     wallet = await Wallet.fromMnemonic(testMnemonic);
     
     contractAddress = await deployContract({
@@ -219,7 +219,7 @@ describe('WalletConnect', () => {
     fireEvent.click(screen.getByText('Connect Wallet'));
     
     await waitFor(() => {
-      expect(mockConnect).toHaveBeenCalledWith('testnet');
+      expect(mockConnect).toHaveBeenCalledWith('preprod');
     });
   });
   

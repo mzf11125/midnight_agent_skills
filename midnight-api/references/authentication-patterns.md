@@ -275,7 +275,7 @@ async function selectWallet() {
   const selected = await showWalletSelector(wallets);
   
   // Connect to selected wallet
-  const api = await selected.connect('testnet');
+  const api = await selected.connect('preprod');
   
   // Store wallet preference
   localStorage.setItem('preferredWallet', selected.id);
@@ -289,7 +289,7 @@ async function autoConnect() {
   
   if (preferred && window.midnight?.[preferred]) {
     try {
-      return await window.midnight[preferred].connect('testnet');
+      return await window.midnight[preferred].connect('preprod');
     } catch (error) {
       console.warn('Failed to auto-connect:', error);
     }
@@ -360,7 +360,7 @@ interface Roles {
 async function checkRole(address: string, role: string): Promise<boolean> {
   const contract = new Contract({
     address: contractAddress,
-    network: 'testnet',
+    network: 'preprod',
     wallet: api
   });
   

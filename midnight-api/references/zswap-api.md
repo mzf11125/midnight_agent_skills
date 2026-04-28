@@ -22,7 +22,7 @@ yarn add @midnight/zswap
 import { setNetworkId, NetworkId } from '@midnight/zswap';
 
 // Set network before any operations
-setNetworkId(NetworkId.TestNet);
+setNetworkId(NetworkId("preprod"));
 ```
 
 ## Core Concepts
@@ -498,7 +498,7 @@ async function sendPrivatePayment(
   proofServer: string
 ) {
   // 1. Set network
-  setNetworkId(NetworkId.TestNet);
+  setNetworkId(NetworkId("preprod"));
   
   // 2. Check balance
   const balance = localState.getBalance(DUST_TOKEN_TYPE);

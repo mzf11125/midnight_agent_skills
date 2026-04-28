@@ -20,7 +20,7 @@ yarn add @midnight-ntwrk/compact-runtime
 import { setNetworkId, NetworkId } from '@midnight-ntwrk/compact-runtime';
 
 // Set network ID first
-setNetworkId(NetworkId.TestNet);
+setNetworkId(NetworkId("preprod"));
 
 // Now safe to use runtime functions
 ```
@@ -346,7 +346,7 @@ import {
 } from '@midnight-ntwrk/compact-runtime';
 
 // 1. Set network
-setNetworkId(NetworkId.TestNet);
+setNetworkId(NetworkId("preprod"));
 
 // 2. Create types
 const fieldType = new CompactTypeField();
@@ -424,7 +424,7 @@ const result = pureCircuits.calculateHash(data);
 ### 1. Always Set Network ID
 ```typescript
 // ✅ At app initialization
-setNetworkId(NetworkId.TestNet);
+setNetworkId(NetworkId("preprod"));
 
 // ❌ Forgetting this causes errors
 const hash = persistentHash(data);  // ERROR if network not set
@@ -624,7 +624,7 @@ import {
 } from '@midnight-ntwrk/compact-runtime';
 
 // Initialize
-setNetworkId(NetworkId.TestNet);
+setNetworkId(NetworkId("preprod"));
 
 // Hash data
 const data = new Uint8Array([1, 2, 3, 4]);

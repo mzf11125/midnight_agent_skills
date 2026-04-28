@@ -7,8 +7,8 @@
 - Chain ID: `1`
 - Status: Coming soon
 
-### Testnet
-- Network ID: `testnet`
+### Preprod
+- Network ID: `preprod`
 - Chain ID: `2`
 - Status: Active
 
@@ -19,12 +19,12 @@
 
 ## Endpoints
 
-### Testnet
+### Preprod
 ```
-Node RPC: https://rpc.testnet.midnight.network
-Node WS: wss://ws.testnet.midnight.network
-Indexer: https://indexer.testnet.midnight.network/graphql
-Proof Server: https://prover.testnet.midnight.network
+Node RPC: https://rpc.preprod.midnight.network
+Node WS: wss://ws.preprod.midnight.network
+Indexer: https://indexer.preprod.midnight.network/graphql
+Proof Server: https://prover.preprod.midnight.network
 ```
 
 ### Preprod
@@ -40,12 +40,12 @@ Proof Server: https://prover.preprod.midnight.network
 ### Basic Config
 ```yaml
 network:
-  id: testnet
+  id: preprod
   listen: 0.0.0.0:30333
   external: your-ip:30333
   bootnodes:
-    - /dns4/bootnode1.testnet.midnight.network/tcp/30333/p2p/...
-    - /dns4/bootnode2.testnet.midnight.network/tcp/30333/p2p/...
+    - /dns4/bootnode1.preprod.midnight.network/tcp/30333/p2p/...
+    - /dns4/bootnode2.preprod.midnight.network/tcp/30333/p2p/...
 
 rpc:
   enabled: true

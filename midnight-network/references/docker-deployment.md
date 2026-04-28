@@ -16,7 +16,7 @@ docker run -d \
   -p 9944:9944 \
   -v midnight-data:/data \
   ghcr.io/midnight-ntwrk/midnight:latest \
-  --chain testnet \
+  --chain preprod \
   --rpc-external \
   --ws-external \
   --rpc-cors all
@@ -38,7 +38,7 @@ services:
     volumes:
       - midnight-data:/data
     command:
-      - --chain=testnet
+      - --chain=preprod
       - --rpc-external
       - --ws-external
       - --rpc-cors=all
@@ -69,7 +69,7 @@ ghcr.io/midnight-ntwrk/midnight:v2.0.0
 
 **Network-specific**:
 ```bash
-ghcr.io/midnight-ntwrk/midnight:testnet
+ghcr.io/midnight-ntwrk/midnight:preprod
 ghcr.io/midnight-ntwrk/midnight:preprod
 ghcr.io/midnight-ntwrk/midnight:mainnet
 ```
@@ -80,7 +80,7 @@ ghcr.io/midnight-ntwrk/midnight:mainnet
 |-----|-------------|----------|
 | `latest` | Latest stable release | Production |
 | `v2.0.0` | Specific version | Version pinning |
-| `testnet` | Testnet optimized | Testing |
+| `preprod` | Preprod optimized | Testing |
 | `preprod` | Pre-production | Staging |
 | `mainnet` | Mainnet optimized | Production |
 | `dev` | Development build | Development |
@@ -111,10 +111,10 @@ services:
     
     environment:
       - RUST_LOG=info,midnight=debug
-      - MIDNIGHT_NETWORK=testnet
+      - MIDNIGHT_NETWORK=preprod
     
     command:
-      - --chain=testnet
+      - --chain=preprod
       - --base-path=/data
       - --name=MyFullNode
       - --rpc-port=9933
@@ -164,7 +164,7 @@ services:
       - midnight-archive-data:/data
     
     command:
-      - --chain=testnet
+      - --chain=preprod
       - --base-path=/data
       - --name=MyArchiveNode
       - --pruning=archive
@@ -211,7 +211,7 @@ services:
       - RUST_LOG=info,midnight=debug
     
     command:
-      - --chain=testnet
+      - --chain=preprod
       - --base-path=/data
       - --validator
       - --name=MyValidator
@@ -255,7 +255,7 @@ services:
     volumes:
       - midnight-data-1:/data
     command:
-      - --chain=testnet
+      - --chain=preprod
       - --base-path=/data
       - --name=Node1
     restart: unless-stopped
@@ -270,7 +270,7 @@ services:
     volumes:
       - midnight-data-2:/data
     command:
-      - --chain=testnet
+      - --chain=preprod
       - --base-path=/data
       - --name=Node2
     restart: unless-stopped
@@ -285,7 +285,7 @@ services:
     volumes:
       - midnight-data-3:/data
     command:
-      - --chain=testnet
+      - --chain=preprod
       - --base-path=/data
       - --name=Node3
     restart: unless-stopped
@@ -372,7 +372,7 @@ services:
     volumes:
       - midnight-archive:/data
     command:
-      - --chain=testnet
+      - --chain=preprod
       - --base-path=/data
       - --pruning=archive
     restart: unless-stopped
@@ -389,19 +389,19 @@ services:
     restart: unless-stopped
   
   indexer:
-    image: ghcr.io/midnight-ntwrk/indexer:v3.0.0
+    image: ghcr.io/midnight-ntwrk/indexer:v4.0.0
     container_name: midnight-indexer
     environment:
       NODE_URL: ws://midnight-archive:9944
       DATABASE_URL: postgresql://indexer:${DB_PASSWORD}@postgres:5432/midnight_indexer
-      NETWORK: testnet
+      NETWORK: preprod
     depends_on:
       - midnight-archive
       - postgres
     restart: unless-stopped
   
   graphql:
-    image: ghcr.io/midnight-ntwrk/indexer-graphql:v3.0.0
+    image: ghcr.io/midnight-ntwrk/indexer-graphql:v4.0.0
     container_name: midnight-graphql
     ports:
       - "4000:4000"
@@ -484,8 +484,8 @@ scrape_configs:
 
 ```bash
 # Network
-MIDNIGHT_NETWORK=testnet
-MIDNIGHT_CHAIN=midnight-testnet-02
+MIDNIGHT_NETWORK=preprod
+MIDNIGHT_CHAIN=midnight-preprod
 
 # Node
 NODE_NAME=MyNode

@@ -4,13 +4,13 @@ import requests
 import sys
 
 ENDPOINTS = {
-    "testnet": {
-        "rpc": "https://rpc.testnet.midnight.network",
-        "indexer": "https://indexer.testnet.midnight.network/graphql"
+    "preprod": {
+        "rpc": "https://rpc.preprod.midnight.network",
+        "indexer": "https://indexer.preprod.midnight.network/graphql"
     }
 }
 
-def check_health(network="testnet"):
+def check_health(network="preprod"):
     if network not in ENDPOINTS:
         print(f"❌ Unknown network: {network}")
         return False
@@ -51,5 +51,5 @@ def check_health(network="testnet"):
     return True
 
 if __name__ == "__main__":
-    network = sys.argv[1] if len(sys.argv) > 1 else "testnet"
+    network = sys.argv[1] if len(sys.argv) > 1 else "preprod"
     check_health(network)

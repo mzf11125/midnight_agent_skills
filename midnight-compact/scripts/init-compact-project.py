@@ -72,7 +72,7 @@ compact test
 
 ## Deploy
 ```bash
-compact deploy --network testnet
+compact deploy --network preprod
 ```
 """)
     

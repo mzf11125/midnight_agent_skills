@@ -522,7 +522,7 @@ valgrind --leak-check=full midnight-node
 du -sh /data/midnight/chains/*/db
 
 # Check database integrity
-midnight-node check-db --chain testnet
+midnight-node check-db --chain preprod
 
 # Check PostgreSQL (indexer)
 psql -U indexer -d midnight_indexer -c "SELECT * FROM pg_stat_activity;"
@@ -545,16 +545,16 @@ psql -U indexer -d midnight_indexer -c "SELECT * FROM pg_stat_activity;"
 **Diagnosis**:
 ```bash
 # Test connectivity
-nc -zv rpc.testnet.midnight.network 443
+nc -zv rpc.preprod.midnight.network 443
 
 # Check DNS
-nslookup rpc.testnet.midnight.network
+nslookup rpc.preprod.midnight.network
 
 # Check firewall
 sudo iptables -L -n
 
 # Test websocket
-wscat -c wss://rpc.testnet.midnight.network
+wscat -c wss://rpc.preprod.midnight.network
 ```
 
 **Solutions**:

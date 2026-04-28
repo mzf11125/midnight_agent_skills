@@ -130,7 +130,7 @@ await secureStorage.save('privateKey', privateKeyHex);
 ```typescript
 import { IndexerConfig } from '@midnight-ntwrk/wallet';
 
-const indexerUri = 'https://indexer.testnet.midnight.network';
+const indexerUri = 'https://indexer.preprod.midnight.network';
 
 // Sync wallet state
 await wallet.sync(indexerUri);
@@ -378,7 +378,7 @@ await submitTransaction(signedTx, nodeUri);
 ```typescript
 import { NetworkId } from '@midnight-ntwrk/wallet';
 
-wallet.setNetwork(NetworkId.TestNet);
+wallet.setNetwork(NetworkId("preprod"));
 // or NetworkId.MainNet
 ```
 
@@ -386,7 +386,7 @@ wallet.setNetwork(NetworkId.TestNet);
 
 ```typescript
 wallet.setIndexer({
-  uri: 'https://indexer.testnet.midnight.network',
+  uri: 'https://indexer.preprod.midnight.network',
   timeout: 30000,  // 30 seconds
   retries: 3
 });
@@ -424,10 +424,10 @@ async function sendPayment(
 ) {
   // 1. Load wallet
   const wallet = await Wallet.fromSeedPhrase(seedPhrase);
-  wallet.setNetwork(NetworkId.TestNet);
+  wallet.setNetwork(NetworkId("preprod"));
   
   // 2. Sync state
-  const indexerUri = 'https://indexer.testnet.midnight.network';
+  const indexerUri = 'https://indexer.preprod.midnight.network';
   await wallet.sync(indexerUri);
   
   // 3. Check balance
@@ -450,7 +450,7 @@ async function sendPayment(
   const signedTx = await wallet.signTransaction(tx);
   
   // 6. Submit
-  const nodeUri = 'https://rpc.testnet.midnight.network';
+  const nodeUri = 'https://rpc.preprod.midnight.network';
   const txHash = await submitTransaction(signedTx, nodeUri);
   
   console.log(`Transaction submitted: ${txHash}`);

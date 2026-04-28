@@ -24,9 +24,9 @@ NetworkId('preprod')
 - **Purpose**: Final testing before mainnet
 - **Use**: Testing with mainnet-like conditions
 
-#### Testnet-02 (Development)
+#### Preprod (Development)
 ```typescript
-NetworkId('testnet-02')
+NetworkId('preprod')
 ```
 - **Status**: Active
 - **Purpose**: Development and testing
@@ -44,7 +44,7 @@ NetworkId('testnet-02')
 import { setNetworkId, NetworkId } from '@midnight-ntwrk/compact-runtime';
 
 // MUST be called before any operations
-setNetworkId(NetworkId('testnet-02'));
+setNetworkId(NetworkId('preprod'));
 
 // Now safe to use runtime functions
 const hash = transientHash(data);
@@ -55,7 +55,7 @@ const hash = transientHash(data);
 import { setNetworkId, NetworkId } from '@midnight/zswap';
 
 // MUST be called before creating transactions
-setNetworkId(NetworkId('testnet-02'));
+setNetworkId(NetworkId('preprod'));
 
 // Now safe to create offers
 const offer = new Offer(...);
@@ -66,7 +66,7 @@ const offer = new Offer(...);
 import { setNetworkId, NetworkId } from '@midnight-ntwrk/ledger';
 
 // MUST be called before transaction assembly
-setNetworkId(NetworkId('testnet-02'));
+setNetworkId(NetworkId('preprod'));
 
 // Now safe to create transactions
 const tx = new UnprovenTransaction(...);
@@ -78,33 +78,33 @@ import { NetworkId } from '@midnight-ntwrk/midnight-js-network-id';
 
 // Network ID passed to connect()
 const connectedAPI = await window.midnight.wallet.connect(
-  NetworkId('testnet-02')
+  NetworkId('preprod')
 );
 ```
 
 ## Network-Specific Configuration
 
-### Testnet-02
+### Preprod
 
 #### Node Endpoints
 ```typescript
 const config = {
-  nodeRpcUrl: 'https://rpc.testnet.midnight.network',
-  nodeWsUrl: 'wss://ws.testnet.midnight.network',
-  indexerUri: 'https://indexer.testnet.midnight.network',
-  indexerWsUri: 'wss://indexer-ws.testnet.midnight.network',
-  proverServerUri: 'https://prover.testnet.midnight.network'
+  nodeRpcUrl: 'https://rpc.preprod.midnight.network',
+  nodeWsUrl: 'wss://ws.preprod.midnight.network',
+  indexerUri: 'https://indexer.preprod.midnight.network',
+  indexerWsUri: 'wss://indexer-ws.preprod.midnight.network',
+  proverServerUri: 'https://prover.preprod.midnight.network'
 };
 ```
 
 #### Chain Specification
 ```bash
---chain=/res/testnet-02/testnetRaw.json
+--chain=/res/preprod/preprodRaw.json
 ```
 
 #### Configuration Preset
 ```bash
-CFG_PRESET="testnet-02"
+CFG_PRESET="preprod"
 ```
 
 ### Preprod
@@ -176,7 +176,7 @@ Error: Network ID not configured
 const hash = transientHash(data);
 
 // ✅ CORRECT
-setNetworkId(NetworkId('testnet-02'));
+setNetworkId(NetworkId('preprod'));
 const hash = transientHash(data);
 ```
 
@@ -189,11 +189,11 @@ Error: Network ID mismatch
 
 ```typescript
 // ❌ WRONG - inconsistent
-setNetworkId(NetworkId('testnet-02')); // Runtime
+setNetworkId(NetworkId('preprod')); // Runtime
 await wallet.connect(NetworkId('preprod')); // Wallet
 
 // ✅ CORRECT - consistent
-const networkId = NetworkId('testnet-02');
+const networkId = NetworkId('preprod');
 setNetworkId(networkId); // Runtime
 await wallet.connect(networkId); // Wallet
 ```
@@ -210,9 +210,9 @@ Error: Transaction rejected - wrong network
 ### Development Setup
 ```typescript
 // .env.development
-VITE_NETWORK_ID=testnet-02
-VITE_NODE_RPC=https://rpc.testnet.midnight.network
-VITE_INDEXER_URI=https://indexer.testnet.midnight.network
+VITE_NETWORK_ID=preprod
+VITE_NODE_RPC=https://rpc.preprod.midnight.network
+VITE_INDEXER_URI=https://indexer.preprod.midnight.network
 
 // config.ts
 import { NetworkId } from '@midnight-ntwrk/midnight-js-network-id';
@@ -237,18 +237,18 @@ VITE_INDEXER_URI=https://indexer.mainnet.midnight.network
 ### Docker Environment Variables
 ```bash
 docker run \
-  -e CFG_PRESET="testnet-02" \
+  -e CFG_PRESET="preprod" \
   -e POSTGRES_HOST="postgres" \
   midnightnetwork/midnight-node:latest \
-  --chain=/res/testnet-02/testnetRaw.json
+  --chain=/res/preprod/preprodRaw.json
 ```
 
 ### Full Node Configuration
 ```yaml
 # node-config.yaml
 network:
-  id: testnet-02
-  chain_spec: /res/testnet-02/testnetRaw.json
+  id: preprod
+  chain_spec: /res/preprod/preprodRaw.json
 
 database:
   host: localhost
@@ -261,7 +261,7 @@ database:
 ### Multi-Network Testing
 ```typescript
 describe('Cross-network tests', () => {
-  const networks = ['testnet-02', 'preprod'] as const;
+  const networks = ['preprod', 'preprod'] as const;
   
   networks.forEach(network => {
     it(`should work on ${network}`, async () => {
@@ -281,7 +281,7 @@ describe('Cross-network tests', () => {
 ```typescript
 // ✅ Set at app initialization
 function initializeApp() {
-  const networkId = NetworkId('testnet-02');
+  const networkId = NetworkId('preprod');
   setNetworkId(networkId);
   
   // Now safe to use APIs
@@ -292,7 +292,7 @@ function initializeApp() {
 ### 2. Use Environment Variables
 ```typescript
 // ✅ Configure via environment
-const networkId = NetworkId(process.env.NETWORK_ID || 'testnet-02');
+const networkId = NetworkId(process.env.NETWORK_ID || 'preprod');
 setNetworkId(networkId);
 ```
 
@@ -320,6 +320,6 @@ const indexer = new IndexerClient(config.indexerUri);
 ## Resources
 
 - Network Status: https://status.midnight.network
-- Testnet Faucet: https://faucet.testnet.midnight.network
+- Preprod Faucet: https://faucet.preprod.midnight.network
 - Node Endpoints: https://docs.midnight.network/nodes/node-endpoints
 - DApp Connector: https://docs.midnight.network/api-reference/dapp-connector

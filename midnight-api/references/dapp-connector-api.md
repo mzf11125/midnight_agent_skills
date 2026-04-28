@@ -51,7 +51,7 @@ console.log(`${walletName} v${version}`);
 import { NetworkId } from '@midnight-ntwrk/midnight-js-network-id';
 
 const connectedAPI = await window.midnight.lace.connect(
-  NetworkId('testnet-02')
+  NetworkId('preprod')
 );
 ```
 
@@ -69,13 +69,13 @@ if (compatibleWallets.length === 0) {
 
 // Let user select
 const selectedWallet = await askUserToSelect(compatibleWallets);
-const connectedAPI = await selectedWallet.connect(NetworkId('testnet-02'));
+const connectedAPI = await selectedWallet.connect(NetworkId('preprod'));
 ```
 
 ### Verify Connection
 ```typescript
 const status = await connectedAPI.getConnectionStatus();
-console.assert(status.networkId === NetworkId('testnet-02'));
+console.assert(status.networkId === NetworkId('preprod'));
 ```
 
 ## ConnectedAPI Methods
@@ -271,7 +271,7 @@ const provenTx = await unprovenTx.prove(provingProvider, costModel);
 import { NetworkId } from '@midnight-ntwrk/midnight-js-network-id';
 
 async function connectWallet(): Promise<ConnectedAPI> {
-  const networkId = NetworkId('testnet-02');
+  const networkId = NetworkId('preprod');
   
   // Filter compatible wallets
   const compatibleWallets = Object.values(window.midnight ?? {})
