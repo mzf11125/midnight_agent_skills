@@ -72,8 +72,8 @@ Contributors will be:
 
 ## Contact
 
-- **Issues**: [GitHub Issues](https://github.com/mzf11125/midnight-agent-skills/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/mzf11125/midnight-agent-skills/discussions)
+- **Issues**: [GitHub Issues](https://github.com/mzf11125/midnight_agent_skills/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/mzf11125/midnight_agent_skills/discussions)
 - **Email**: mzidanfatonie@tawf.xyzz
 
 ## License
