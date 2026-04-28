@@ -71,6 +71,7 @@ npx skills add https://github.com/mzf11125/midnight_agent_skills --skill midnigh
 - **Standard Library** - Hashing, elliptic curve, coin management
 - **OpenZeppelin Contracts** - FungibleToken, MultiToken, NonFungibleToken
 - **CI/CD Integration** - setup-compact-action GitHub Action
+- **Midnight MCP** - AI-assisted development with 29 tools
 
 **Dev Tools from midnight-awesome-dapps:**
 
