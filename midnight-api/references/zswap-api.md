@@ -1,6 +1,6 @@
 # ZSwap API Reference
 
-**Package**: `@midnight/zswap v3.0.2`
+**Package**: `@midnight/zswap v4.0.0-rc`
 
 ## Overview
 
