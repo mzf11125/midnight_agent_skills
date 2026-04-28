@@ -74,7 +74,7 @@ const connector = new DAppConnector();
 await connector.ready;
 ```
 
-### 2. DApp Connector API (v4.0.1)
+### 2. DApp Connector API (v4.0.4)
 
 Wallet connection interface.
 

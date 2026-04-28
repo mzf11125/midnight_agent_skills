@@ -1,9 +1,9 @@
 ---
 name: midnight-compact
-description: Comprehensive guide to the Compact programming language (v0.20+) for writing privacy-preserving smart contracts on Midnight Network. Use when users need to write Compact smart contracts with zero-knowledge proofs, understand Compact syntax and language features, implement ZK circuit patterns and optimizations, generate contract boilerplate and project scaffolding, learn best practices for secure contract development, access Compact standard library functions, and compile and test Compact contracts.
+description: Comprehensive guide to the Compact programming language (v0.22+) for writing privacy-preserving smart contracts on Midnight Network. Use when users need to write Compact smart contracts with zero-knowledge proofs, understand Compact syntax and language features, implement ZK circuit patterns and optimizations, generate contract boilerplate and project scaffolding, learn best practices for secure contract development, access Compact standard library functions, and compile and test Compact contracts.
 ---
 
-# Midnight Compact Language (v0.20+)
+# Midnight Compact Language (v0.22+)
 
 Complete guide to writing privacy-preserving smart contracts with Compact.
 
@@ -26,7 +26,7 @@ Compact is a purpose-built programming language for zero-knowledge smart contrac
 
 ## Quick Start
 
-### Minimal Working Contract (v0.20+)
+### Minimal Working Contract (v0.22+)
 ```compact
 pragma language_version >= 0.20;
 import CompactStandardLibrary;
@@ -663,7 +663,7 @@ With MCP, AI generates **verified working code**.
 
 ### Version Management
 
-Use exact versions (e.g., `0.26.0`) for reproducibility. Latest versions available on GitHub releases.
+Use exact versions (e.g., `0.30.0`) for reproducibility. Latest versions available on GitHub releases.
 
 ## CI/CD Integration
 
@@ -673,13 +673,13 @@ Official GitHub Action for installing and caching the Compact compiler: [midnigh
 
 **Features**:
 - Intelligent caching for fast subsequent runs (~2-5 seconds cached vs ~30-60 seconds fresh)
-- Version pinning support (e.g., `0.26.0`) or use `latest`
+- Version pinning support (e.g., `0.30.0`) or use `latest`
 
 ```yaml
 - name: Setup Compact Compiler
   uses: midnightntwrk/setup-compact-action@v1
   with:
-    compact-version: '0.26.0'
+    compact-version: '0.30.0'
 
 - name: Compile Compact code
   run: compact compile src/*.compact

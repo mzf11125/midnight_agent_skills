@@ -59,7 +59,7 @@ npx skills add https://github.com/mzf11125/midnight_agent_skills --skill midnigh
 - 🔹 [DUST Generator](https://github.com/midnightntwrk/midnight-dust-generator) - Programmatic DUST for Preprod
 
 ### 2. midnight-compact
-**Purpose**: Complete guide to the Compact programming language (v0.20+)
+**Purpose**: Complete guide to the Compact programming language (v0.22+)
 
 **Key Topics:**
 
@@ -87,7 +87,7 @@ npx skills add https://github.com/mzf11125/midnight_agent_skills --skill midnigh
 **Key Topics:**
 
 - **Midnight.js SDK** - Complete TypeScript SDK (v4.x)
-- **DApp Connector** - Wallet integration (v4.0.1)
+- **DApp Connector** - Wallet integration (v4.0.4)
 - **Compact Runtime** - Contract execution (v0.15.0)
 - **Ledger API** - Blockchain operations (v8.0.3)
 - **Indexer API** - Blockchain queries
@@ -137,7 +137,7 @@ npx skills add https://github.com/mzf11125/midnight_agent_skills --skill midnigh
 These skills enable AI agents to:
 
 - ✅ Explain Midnight's zero-knowledge architecture
-- ✅ Write Compact smart contracts (v0.20+)
+- ✅ Write Compact smart contracts (v0.22+)
 - ✅ Integrate wallet connections and APIs
 - ✅ Deploy contracts to any environment
 - ✅ Test with unit, integration, and E2E tests
