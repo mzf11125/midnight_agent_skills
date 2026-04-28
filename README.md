@@ -128,6 +128,7 @@ npx skills add https://github.com/mzf11125/midnight_agent_skills --skill midnigh
 
 - [midnight-local-dev](https://github.com/midnightntwrk/midnight-local-dev) - Local full node
 - [Midnight MNN Helm](https://github.com/0xstrong/midnight-mnn-helm) - K8s deployment
+- [Midnight Explorer](https://www.midnightexplorer.com/) - Block explorer
 
 ---
 
