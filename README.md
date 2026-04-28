@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.0.1-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Skills](https://img.shields.io/badge/skills-4-orange.svg)
 ![Docs](https://img.shields.io/badge/docs-comprehensive-purple.svg)
@@ -94,7 +94,7 @@ npx skills add https://github.com/mzf11125/midnight_agent_skills --skill midnigh
 - **React Integration** - Frontend patterns
 - **Contract Deployment** - Local, **preprod** (active), mainnet
 
-**⚠️ Note**: Testnet (testnet-02) is **discontinued**. Use **Preprod** for testing.
+**⚠️ Note**: Both **Preview** and **Testnet-02** are **discontinued**. Use **Preprod** for all testing.
 
 **SDKs from midnight-awesome-dapps:**
 
@@ -115,11 +115,18 @@ npx skills add https://github.com/mzf11125/midnight_agent_skills --skill midnigh
 - **Local Development** - midnight-local-dev, playground
 - **Troubleshooting** - Common issues
 
+**Official Network Endpoints** (from [relnotes/network.md](https://docs.midnight.network/relnotes/network.md)):
+
+| Network | RPC URL | Indexer | Status |
+|---------|--------|--------|--------|
+| Mainnet | https://rpc.mainnet.midnight.network | https://indexer.mainnet.midnight.network/api/v4/graphql | Production |
+| Preprod | https://rpc.preprod.midnight.network | https://indexer.preprod.midnight.network/api/v4/graphql | Active |
+| Preview | - | - | ⛔ Discontinued |
+
 **Infrastructure from midnight-awesome-dapps:**
 
 - [midnight-local-dev](https://github.com/midnightntwrk/midnight-local-dev) - Local full node
 - [Midnight MNN Helm](https://github.com/0xstrong/midnight-mnn-helm) - K8s deployment
-- [Midnight Explorer](https://www.midnightexplorer.com/) - Block explorer
 
 ---
 
