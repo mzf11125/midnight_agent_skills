@@ -1,6 +1,6 @@
 {
   "name": "midnight-agent-skills",
-  "version": "1.0.0",
+  "version": "2.0.2",
   "description": "Complete set of 4 modular agent skills for building on Midnight Network's zero-knowledge blockchain",
   "keywords": [
     "midnight",
