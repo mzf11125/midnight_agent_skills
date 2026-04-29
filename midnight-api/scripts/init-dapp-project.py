@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Initialize a new Midnight DApp project"""
-import os
 import sys
 from pathlib import Path
 
@@ -54,10 +53,10 @@ connectWallet();
 ''')
     
     print(f"✅ Created DApp project: {project_path}")
-    print(f"\nNext steps:")
+    print("\nNext steps:")
     print(f"  cd {project_name}")
-    print(f"  npm install")
-    print(f"  npm start")
+    print("  npm install")
+    print("  npm start")
     
     return True
 

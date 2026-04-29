@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Test wallet connection"""
-import sys
 
 def test_connection():
     print("🔍 Testing wallet connection...")
