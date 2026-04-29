@@ -323,3 +323,60 @@ const indexer = new IndexerClient(config.indexerUri);
 - Preprod Faucet: https://faucet.preprod.midnight.network
 - Node Endpoints: https://docs.midnight.network/nodes/node-endpoints
 - DApp Connector: https://docs.midnight.network/api-reference/dapp-connector
+
+---
+
+## SDK Compatibility & Silent Failures
+
+> Source: "Surviving Midnight SDK: a 700-line cure for the silent failure problem" — Fred Santana, Midnight Aliit
+
+Midnight SDK moves fast. Version mismatches produce **silent failures** — no error, no timeout, just a hung process.
+
+### Known compatibility matrix (as of April 2026)
+
+| Track | `wallet-sdk-facade` | `midnight-node` | `indexer-standalone` | `proof-server` |
+|---|---|---|---|---|
+| Current | 4.0.0 | 0.21.0 | 4.0.0-rc.4 | 7.0.0 |
+| Preprod-3x (legacy) | 2.0.0 | 0.21.0 | 4.0.0-rc.4 | 7.0.0 |
+
+### Critical known issue: `WalletFacade.init()` hangs on standalone node (facade 2.x)
+
+`WalletFacade.init({...})` in SDK 2.x wires sync to `subscribeRuntimeVersion`. The standalone dev node closes that subscription early. Result: wallet sits in `syncing` state forever with **zero error output**.
+
+```typescript
+// This will hang silently with facade 2.x + standalone node
+await wallet.waitForSyncedState();
+console.log('synced!');  // never prints
+```
+
+**Fix:** Either develop against preprod, or upgrade to `wallet-sdk-facade@4.0.0` which reverted to `new WalletFacade(...) + .start()` pattern.
+
+### API change: facade 2.x → 4.x migration
+
+```typescript
+// facade 2.x (removed in 4.x)
+const wallet = await WalletFacade.init({ configuration, shielded, unshielded, dust });
+
+// facade 4.x
+const wallet = new WalletFacade(shielded, unshielded, dust);
+await wallet.start();
+```
+
+### Other common silent failures
+
+| Symptom | Root cause | Fix |
+|---|---|---|
+| `waitForSyncedState()` hangs | facade 2.x + standalone node | Upgrade to facade 4.x or use preprod |
+| `npm install` ENOTFOUND | `.npmrc` pointing at `npm.midnight.network` (doesn't exist) | Remove custom registry from `.npmrc` |
+| Transactions silently fail | Duplicate `@midnight-ntwrk/ledger-v7` in `node_modules` | Run `npm dedupe` |
+| Indexer crash-loops | `indexer.yml` missing `subscription:` block | Add `subscription:` block to config |
+
+### Pre-flight check tool
+
+Run `npx midnight-doctor` before debugging. It cross-references your `package.json`, running Docker containers, and config files against the compatibility matrix and surfaces mismatches in seconds.
+
+```bash
+npx midnight-doctor
+```
+
+Repo: https://github.com/fredericosanntana/midnight-doctor

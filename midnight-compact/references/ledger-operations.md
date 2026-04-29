@@ -600,3 +600,82 @@ circuit getEvent(index: Uint<32>): Bytes<64> {
 - **Type System**: See type-system.md
 - **Circuit Semantics**: See circuit-semantics.md
 - **Standard Library**: See standard-library.md
+
+---
+
+## Maps vs Merkle Trees: The State Dichotomy
+
+> Source: "Working with Maps and Merkle Trees in Compact" — Nasihudeen Jimoh, Midnight Aliit
+
+The core question when choosing a storage structure: **"Does the network need to know *who* owns this data, or only *that* they own it?"**
+
+| Metric | Map | MerkleTree |
+|---|---|---|
+| Data Visibility | Fully Public | Root Public; Leaves/Paths Private |
+| Access Pattern | Key-Based (Direct) | Path-Based (Indirect) |
+| Privacy Model | Transparent Association | Set Membership Anonymity |
+| Proof Complexity | Low O(1) | High O(depth) hashes |
+| Primary Use | Registries, Public Indices | Anonymous Allowlists, Confidential Voting |
+| State Bloat | Linear per entry | Fixed O(1) on-chain root |
+
+### Map operations
+
+```compact
+export ledger registry: Map<Bytes<32>, Bytes<32>>;
+
+export circuit register(profile_hash: Bytes<32>): [] {
+    const user = ownPublicKey();
+    registry.insert(user.bytes, disclose(profile_hash));  // disclose() required
+}
+```
+
+- `insert(k, v)` — creates or overwrites
+- `lookup(k)` — returns value or type default (never throws)
+- `member(k)` — Boolean existence check, cheaper than lookup
+- `remove(k)` — deletes entry, prevents state bloat
+
+### Merkle Tree membership proof
+
+```compact
+export ledger allowlist: MerkleTree<20, Bytes<32>>;  // depth 20 = ~1M entries
+
+witness get_membership_path(leaf: Bytes<32>): MerkleTreePath<20, Bytes<32>>;
+
+export circuit access_exclusive_area(leaf: Bytes<32>): [] {
+    const d_leaf = disclose(leaf);
+    const path = get_membership_path(d_leaf);
+    const computed_root = merkleTreePathRoot<20, Bytes<32>>(path);
+    assert(allowlist.checkRoot(disclose(computed_root)), "Access Denied");
+}
+```
+
+**The double disclosure pattern** is required:
+1. `disclose(leaf)` — ensures the proof corresponds to the exact data provided
+2. `disclose(computed_root)` — required for `checkRoot` to compare against public ledger state (reveals nothing private since the root is already public)
+
+### Depth selection trade-off
+
+Higher depth = more capacity but larger ZK circuit and slower proof generation. A depth-32 tree on mobile can take significantly longer than depth-16. Choose the minimum depth that fits your use case.
+
+### SDK: use `findPathForLeaf`, not manual construction
+
+The `@midnight-ntwrk/compact-runtime` performs strict `instanceof` checks. Manually constructing a `MerkleTreePath` as a JSON literal will fail even if the fields match.
+
+```typescript
+// CORRECT: use the SDK method
+get_membership_path(context, leaf) {
+  const path = context.ledger.allowlist.findPathForLeaf(leaf);
+  if (!path) throw new Error("Leaf not found: state mismatch");
+  return path;
+}
+```
+
+### Historic Merkle Trees for high-traffic apps
+
+Because every new leaf invalidates the root, concurrent users can have their proofs fail mid-generation. `HistoricMerkleTree` allows verifying against any root within the last N blocks, providing a synchronization window.
+
+### Best practices
+
+- **Disclose as late as possible** — directly before the ledger operation that requires it
+- **Sync block height** — ensure your client matches the block height of the Merkle root on-chain; outdated paths are the most common cause of `checkRoot` failures
+- **Cache `MerkleTreePath`** in private state for frequent verifications, invalidate when the ledger root changes
