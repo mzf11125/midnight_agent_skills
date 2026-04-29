@@ -158,3 +158,7 @@ Every new leaf changes the root. Users generating proofs concurrently can have t
 - [Working with Maps and Merkle Trees](https://dev.to/midnight-aliit/working-with-maps-and-merkle-trees-in-compact-40i3) — Nasihudeen Jimoh
 - [Surviving Midnight SDK](https://dev.to/midnight-aliit/surviving-midnight-sdk-a-700-line-cure-for-the-silent-failure-problem-57p) — Fred Santana
 - [Hands-on Deep Dive](https://dev.to/midnight-aliit/hands-on-midnight-deep-dive-start-building-smart-contracts-with-compact-1inb) — Haruki Kondo
+- [You're Probably Using export ledger Wrong](https://dev.to/midnight-aliit/youre-probably-using-export-ledger-wrong-4j1c) — Tushar Pamnani
+- [How Midnight Coordinates Two-Party Transfers](https://dev.to/midnight-aliit/how-midnight-coordinates-two-party-transfers-3dfh) — Tushar Pamnani
+- [ZK Membership Proofs on Midnight](https://dev.to/midnight-aliit/zk-membership-proofs-on-midnight-1e29) — Tushar Pamnani
+- [Advanced Compact Patterns for Web3 Developers](https://dev.to/midnight-aliit/advanced-compact-patterns-for-web3-developers-4m9i) — Nasihudeen Jimoh
