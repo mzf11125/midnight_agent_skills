@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Initialize a new Compact project with proper structure"""
-import os
 import sys
 from pathlib import Path
 
@@ -77,10 +76,10 @@ compact deploy --network preprod
 """)
     
     print(f"✅ Created Compact project: {project_path}")
-    print(f"\nNext steps:")
+    print("\nNext steps:")
     print(f"  cd {project_name}")
-    print(f"  # Edit src/main.compact")
-    print(f"  compact build")
+    print("  # Edit src/main.compact")
+    print("  compact build")
     
     return True
 
