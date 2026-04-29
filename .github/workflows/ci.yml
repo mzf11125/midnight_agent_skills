@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate JSON files
+        run: |
+          find . -name "*.json" -not -path "./.git/*" | while read f; do
+            python3 -m json.tool "$f" > /dev/null && echo "✓ $f" || { echo "✗ $f"; exit 1; }
+          done
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Lint Python scripts
+        run: |
+          pip install pyflakes --quiet
+          find . -name "*.py" -not -path "./.git/*" | xargs python3 -m pyflakes
+
+      - name: Check required skill files exist
+        run: |
+          for skill in midnight-concepts midnight-compact midnight-api midnight-network; do
+            test -f "$skill/skill.json" || { echo "Missing $skill/skill.json"; exit 1; }
+            test -f "$skill/SKILL.md"   || { echo "Missing $skill/SKILL.md"; exit 1; }
+            echo "✓ $skill"
+          done
