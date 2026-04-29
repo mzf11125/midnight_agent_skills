@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Monitor validator performance"""
-import sys
 import time
 
 def monitor_validator():
