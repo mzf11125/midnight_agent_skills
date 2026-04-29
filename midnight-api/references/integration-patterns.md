@@ -786,3 +786,121 @@ console.log('Payment sent:', txHash);
 - **Wallet API**: See wallet-api.md
 - **Error Handling**: See error-codes.md
 - **Network Configuration**: See network-configuration.md
+
+---
+
+## Wallet Integration (Frontend)
+
+> Source: "I Spent Hours in the DOM So You Don't Have To" — Tushar Pamnani
+
+Midnight has no `window.ethereum` equivalent. Lace injects under `window.lace`, 1AM under `window.midnight`. Methods exist but aren't documented. Use `midnight-wallet-kit` to avoid reverse-engineering the DOM.
+
+```bash
+npm install midnight-wallet-kit
+```
+
+```typescript
+import { WalletManager, InjectedWalletAdapter } from 'midnight-wallet-kit';
+
+const manager = new WalletManager();
+manager
+  .register(new InjectedWalletAdapter({ name: 'Lace', providerKey: 'lace' }))
+  .register(new InjectedWalletAdapter({ name: '1AM', providerKey: 'midnight' }));
+```
+
+```tsx
+import { WalletProvider } from 'midnight-wallet-kit/react';
+
+<WalletProvider manager={manager} autoConnect={['1AM', 'Lace']} autoRestore={true}>
+  {children}
+</WalletProvider>
+```
+
+### The four hooks
+
+```typescript
+const { address, isConnected, connectionState, error } = useWallet();
+const { connect, disconnect, adapters } = useConnect();
+const { buildAndSign, signMessage } = useIntent();
+const { balance, refetch } = useBalance(); // polls every 15s, { tDUST, shielded }
+```
+
+### Typed errors — no more `catch (e: any)`
+
+```typescript
+import { ProviderNotFoundError, ConnectionRejectedError, NetworkMismatchError } from 'midnight-wallet-kit';
+
+try {
+  await connect('Lace');
+} catch (e) {
+  if (e instanceof ProviderNotFoundError) showInstallPrompt();
+  else if (e instanceof NetworkMismatchError) showNetworkSwitchPrompt();
+}
+```
+
+`NetworkMismatchError` fires when the user's wallet is on mainnet but your dApp targets preprod — silent without this check.
+
+### SSR / Next.js
+
+The hooks are SSR-safe. Provider detection only runs client-side — no `window is not defined` during Next.js server-side rendering.
+
+### Testing without a browser extension
+
+```typescript
+import { MockWalletAdapter } from 'midnight-wallet-kit/testing';
+
+const adapter = new MockWalletAdapter({
+  name: 'TestWallet',
+  address: 'mn_addr1_test...',
+  shouldRejectSign: false,
+  signDelay: 100
+});
+manager.register(adapter);
+```
+
+Repo: https://github.com/tusharpamnani/midnight-wallet-kit
+
+---
+
+## Preprod Troubleshooting
+
+> Source: "Troubleshooting Midnight Pre-Prod: A Week in the Trenches" — Gutopro
+
+### Recommended stable setup
+
+- Runtime: Node 22
+- Wallet: **1AM** (on preprod) — more reliable than Lace for faucet and DUST
+- Proof server: running locally via Docker
+- Workflow: wallet created via CLI using 1AM config
+
+### Preprod network config
+
+```typescript
+const CONFIG = {
+  indexer: 'https://indexer.preprod.midnight.network/api/v4/graphql',
+  indexerWS: 'wss://indexer.preprod.midnight.network/api/v4/graphql/ws',
+  node: 'https://rpc.preprod.midnight.network',
+  proofServer: 'http://127.0.0.1:6300',
+};
+```
+
+### Common issues
+
+| Issue | Fix |
+|---|---|
+| Faucet "Invalid Address" error | Use 1AM wallet; set network to **preprod BEFORE** copying address |
+| `deploy.ts` hangs | Replace config with 1AM network config AND create wallet via CLI — both required |
+| DUST registration timeout | Same root cause as deploy — fix config first |
+| "Ghost DUST" (success but no tDUST arrives) | Use 1AM wallet; Lace has intermittent faucet sync issues |
+| Unexpected tDUST drainage | Every write op costs tDUST; refuel proactively, track via 1AM Explorer |
+| Contract interactions fail mid-session | Lace loses sync; manually click Sync before every contract interaction |
+
+### SDK type mapping (Compact → TypeScript)
+
+| Compact Type | TypeScript Type |
+|---|---|
+| `Boolean` | `boolean` |
+| `Uint<N>` | `bigint` |
+| `Bytes<N>` | `Uint8Array` |
+| `Maybe<T>` | `T \| undefined` |
+| `Vector<N, T>` | `T[]` |

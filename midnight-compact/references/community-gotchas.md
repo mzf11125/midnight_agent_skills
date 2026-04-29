@@ -162,3 +162,11 @@ Every new leaf changes the root. Users generating proofs concurrently can have t
 - [How Midnight Coordinates Two-Party Transfers](https://dev.to/midnight-aliit/how-midnight-coordinates-two-party-transfers-3dfh) — Tushar Pamnani
 - [ZK Membership Proofs on Midnight](https://dev.to/midnight-aliit/zk-membership-proofs-on-midnight-1e29) — Tushar Pamnani
 - [Advanced Compact Patterns for Web3 Developers](https://dev.to/midnight-aliit/advanced-compact-patterns-for-web3-developers-4m9i) — Nasihudeen Jimoh
+- [I Spent Hours in the DOM So You Don't Have To](https://dev.to/midnight-aliit/i-spent-hours-in-the-dom-so-you-dont-have-to-e8h) — Tushar Pamnani
+- [Troubleshooting Midnight Pre-Prod](https://dev.to/midnight-aliit/troubleshooting-midnight-pre-prod-a-week-in-the-trenches-2g4d) — Gutopro
+- [How Midnight Verifies Tokens Without Computing It](https://dev.to/midnight-aliit/how-midnight-verifies-tokens-without-computing-it-5co6) — Tushar Pamnani
+- [Building a Fungible Token in Compact](https://dev.to/midnight-aliit/building-a-fungible-token-in-compact-midnight-3nfh) — Neeraj Choubisa
+- [DUST vs NIGHT](https://dev.to/midnight-aliit/dust-vs-night-rethinking-how-blockchains-handle-value-and-fees-586l) — Neeraj Choubisa
+- [Midnight Mainnet Is Live](https://dev.to/midnight-aliit/midnight-mainnet-is-live-the-privacy-stack-just-got-real-4d65) — Barnabas
+- [Selective Disclosure & Self-Managing DIDs for AI Agents](https://dev.to/midnight-aliit/selective-disclosure-self-managing-dids-for-ai-agents-3kcl) — Alex Pestchanker
+- [Zero-Knowledge, Zero Friction](https://dev.to/midnight-aliit/zero-knowledge-zero-friction-automating-dapp-development-on-midnight-29f1) — Nasihudeen Jimoh

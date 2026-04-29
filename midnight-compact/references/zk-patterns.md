@@ -87,3 +87,77 @@ circuit proveProperty(private data: Field, public property: Bool) -> Bool {
   checkProperty(data) == property
 }
 ```
+
+---
+
+## Verification Over Computation Pattern
+
+> Source: "How Midnight Verifies Tokens Without Computing It" — Tushar Pamnani
+
+The most general ZK circuit design principle: **don't compute expensive functions inside a circuit — verify that a claimed result satisfies the mathematical definition.**
+
+### Example: Quadratic Voting (floor sqrt)
+
+`sqrt` is expensive in ZK circuits. Instead of computing it, verify the claim:
+
+`w = floor(sqrt(tokens))` iff `w² ≤ tokens < (w+1)²`
+
+Which simplifies to two cheap inequality checks:
+
+```compact
+circuit verifySqrt(tokens: Uint<64>, w: Uint<32>, w_sq: Uint<64>): [] {
+    assert(w_sq <= tokens, "Weight too large: w^2 > tokens");
+    const two_w = (w as Uint<64>) + (w as Uint<64>);
+    assert(tokens - w_sq < two_w + 1, "Weight too small: use floor(sqrt(tokens))");
+}
+```
+
+The caller computes off-chain and passes as witnesses:
+
+```typescript
+const w = Math.floor(Math.sqrt(Number(tokens)));
+const w_sq = BigInt(w) * BigInt(w);
+```
+
+The circuit never computes a square root. It only verifies two inequalities — cheap in any arithmetic circuit.
+
+### The general pattern
+
+Anywhere you find an expensive function (sqrt, log, hash of large input):
+1. Compute it off-chain in TypeScript
+2. Pass the result as a witness
+3. In the circuit, verify the result satisfies cheap mathematical constraints
+
+### Fungible Token Module
+
+> Source: "Building a Fungible Token in Compact" — Neeraj Choubisa
+
+Compact has no inheritance. Use module composition instead:
+
+```compact
+// WRONG (Solidity thinking)
+contract MyToken is ERC20 { ... }
+
+// CORRECT (Compact)
+import "./token/FungibleToken.compact" prefix FT_;
+
+export circuit init(): [] {
+    FT_.initialize("My Token", "MTK", 18);
+    const owner = left<ZswapCoinPublicKey, ContractAddress>(ownPublicKey());
+    FT_._mint(owner, 1000000);
+}
+
+export circuit transfer(
+    to: Either<ZswapCoinPublicKey, ContractAddress>,
+    amount: Uint<128>
+): Boolean {
+    return FT_.transfer(to, amount);
+}
+```
+
+**Key differences from ERC-20:**
+- Uses `Uint<128>` not `uint256`
+- No events
+- No contract-to-contract transfers (yet)
+- Initialization is required and must not be skipped
+- Use `circuit` not `function`
