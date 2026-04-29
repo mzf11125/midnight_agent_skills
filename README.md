@@ -52,11 +52,11 @@ npx skills add https://github.com/mzf11125/midnight_agent_skills --skill midnigh
 
 **Real-World DApp Examples from midnight-awesome-dapps:**
 
-- 🔹 [LunarSwap](https://github.com/OpenZeppelin/midnight-apps) - UTXO-based DEX
-- 🔹 [Hydra Stake](https://github.com/statera-protocol/hydra-stake-protocol) - Liquid staking
-- 🔹 [Midnames](https://github.com/midnames/core) - ZK DID
-- 🏆 [KYC Midnight](https://github.com/joacolinares/kyc-midnight) - KYC attestations
-- 🔹 [DUST Generator](https://github.com/midnightntwrk/midnight-dust-generator) - Programmatic DUST for Preprod
+-  [LunarSwap](https://github.com/OpenZeppelin/midnight-apps) - UTXO-based DEX
+-  [Hydra Stake](https://github.com/statera-protocol/hydra-stake-protocol) - Liquid staking
+-  [Midnames](https://github.com/midnames/core) - ZK DID
+-  [KYC Midnight](https://github.com/joacolinares/kyc-midnight) - KYC attestations
+-  [DUST Generator](https://github.com/midnightntwrk/midnight-dust-generator) - Programmatic DUST for Preprod
 
 ### 2. midnight-compact
 **Purpose**: Complete guide to the Compact programming language (v0.22+)
@@ -75,8 +75,8 @@ npx skills add https://github.com/mzf11125/midnight_agent_skills --skill midnigh
 
 **Dev Tools from midnight-awesome-dapps:**
 
-- 🔹 [Create Midnight App](https://github.com/midnightntwrk/create-mn-app) - CLI scaffold
-- 🔹 [OpenZeppelin Compact Tools](https://github.com/OpenZeppelin/compact-tools)
+- [Create Midnight App](https://github.com/midnightntwrk/create-mn-app) - CLI scaffold
+- [OpenZeppelin Compact Tools](https://github.com/OpenZeppelin/compact-tools)
 - [VS Code Extension](https://github.com/foxytanuki/compact-vscode)
 - [Compact Playground](https://github.com/Olanetsoft/compact-playground)
 - [setup-compact-action](https://github.com/midnightntwrk/setup-compact-action) - GitHub Action for CI/CD
