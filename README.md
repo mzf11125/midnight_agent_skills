@@ -38,6 +38,7 @@ npx skills add https://github.com/mzf11125/midnight_agent_skills --skill midnigh
 ## Available Skills
 
 ### 1. midnight-concepts
+
 **Purpose**: Foundational knowledge about Midnight's zero-knowledge architecture
 
 **Key Topics** (from official docs + community):
@@ -52,13 +53,14 @@ npx skills add https://github.com/mzf11125/midnight_agent_skills --skill midnigh
 
 **Real-World DApp Examples from midnight-awesome-dapps:**
 
--  [LunarSwap](https://github.com/OpenZeppelin/midnight-apps) - UTXO-based DEX
--  [Hydra Stake](https://github.com/statera-protocol/hydra-stake-protocol) - Liquid staking
--  [Midnames](https://github.com/midnames/core) - ZK DID
--  [KYC Midnight](https://github.com/joacolinares/kyc-midnight) - KYC attestations
--  [DUST Generator](https://github.com/midnightntwrk/midnight-dust-generator) - Programmatic DUST for Preprod
+- [LunarSwap](https://github.com/OpenZeppelin/midnight-apps) - UTXO-based DEX
+- [Hydra Stake](https://github.com/statera-protocol/hydra-stake-protocol) - Liquid staking
+- [Midnames](https://github.com/midnames/core) - ZK DID
+- [KYC Midnight](https://github.com/joacolinares/kyc-midnight) - KYC attestations
+- [DUST Generator](https://github.com/midnightntwrk/midnight-dust-generator) - Programmatic DUST for Preprod
 
 ### 2. midnight-compact
+
 **Purpose**: Complete guide to the Compact programming language (v0.22+)
 
 **Key Topics:**
@@ -82,6 +84,7 @@ npx skills add https://github.com/mzf11125/midnight_agent_skills --skill midnigh
 - [setup-compact-action](https://github.com/midnightntwrk/setup-compact-action) - GitHub Action for CI/CD
 
 ### 3. midnight-api
+
 **Purpose**: API integration for building DApps (v8.0+)
 
 **Key Topics:**
@@ -104,6 +107,7 @@ npx skills add https://github.com/mzf11125/midnight_agent_skills --skill midnigh
 - [Midnight Local Dev](https://github.com/midnightntwrk/midnight-local-dev)
 
 ### 4. midnight-network
+
 **Purpose**: Network infrastructure, validators, and operations
 
 **Key Topics:**
