@@ -1,0 +1,5 @@
+{
+  "name": "proof-server",
+  "description": "Proof server reference for Midnight Network. Internal architecture, API reference, configuration tuning, and operational monitoring.",
+  "tags": ["midnight", "proof-server", "zk-proofs", "proving", "api", "monitoring", "configuration"]
+}

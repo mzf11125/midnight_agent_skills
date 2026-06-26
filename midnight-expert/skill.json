@@ -1,0 +1,5 @@
+{
+  "name": "midnight-expert",
+  "description": "Meta-plugin for Midnight ecosystem diagnostics. Health checks across all installed plugins and tools, version compatibility matrix.",
+  "tags": ["midnight", "meta", "diagnostics", "health-check", "doctor", "compatibility"]
+}

@@ -13,10 +13,11 @@ Midnight provides multiple specialized APIs:
 
 | API | Package | Version | Purpose |
 |-----|---------|---------|---------|
-| **Midnight.js** | `@midnight-ntwrk/midnight-js` | 4.x | Complete TypeScript SDK |
-| **Compact Runtime** | `@midnight-ntwrk/compact-runtime` | 0.15.0 | Execute contracts, generate ZK proofs |
+| **Midnight.js** | `@midnight-ntwrk/midnight-js` | 4.0.4 | Complete TypeScript SDK |
+| **Compact Runtime** | `@midnight-ntwrk/compact-runtime` | 0.16.0 | Execute contracts, generate ZK proofs |
 | **DApp Connector** | `@midnight-ntwrk/dapp-connector-api` | 4.0.1 | Connect to wallets |
 | **Ledger** | `@midnight/ledger` | 8.0.3 | Blockchain transactions |
+| **Wallet SDK** | `@midnight-ntwrk/wallet-sdk-facade` | 3.0.0 | Unified wallet operations, key management, transfers |
 | **Wallet API** | Various | Latest | Wallet operations |
 
 ## Quick Start
@@ -27,6 +28,7 @@ npm install @midnight-ntwrk/midnight-js
 npm install @midnight-ntwrk/dapp-connector-api
 npm install @midnight-ntwrk/compact-runtime
 npm install @midnight/ledger
+npm install @midnight-ntwrk/wallet-sdk-facade
 ```
 
 ### Basic DApp Setup
@@ -48,7 +50,7 @@ const connect = async () => {
 
 ## Core APIs
 
-### 1. Midnight.js SDK (v4.x)
+### 1. Midnight.js SDK (v4.0.4)
 
 Complete JavaScript/TypeScript SDK for building DApps.
 
@@ -74,7 +76,7 @@ const connector = new DAppConnector();
 await connector.ready;
 ```
 
-### 2. DApp Connector API (v4.0.4)
+### 2. DApp Connector API (v4.0.1)
 
 Wallet connection interface.
 
@@ -116,7 +118,7 @@ const tx = await connected.makeTransfer({
 });
 ```
 
-### 3. Compact Runtime API (v0.15.0)
+### 3. Compact Runtime API (v0.16.0)
 
 Execute Compact contracts and generate proofs.
 

@@ -1,0 +1,5 @@
+{
+  "name": "midnight-tooling",
+  "description": "Development environment management for Midnight Network. CLI installation, local devnet, Docker config, diagnostics, and status bar.",
+  "tags": ["midnight", "devnet", "docker", "tooling", "cli", "local-dev", "diagnostics"]
+}

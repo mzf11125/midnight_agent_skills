@@ -524,6 +524,97 @@ if (error.code === 'RATE_LIMIT_EXCEEDED') {
 }
 ```
 
+### Wallet SDK Errors
+
+#### INVALID_TRANSACTION_SUBMISSION
+**Description**: Transaction submission failed validation.
+
+**Cause**: Malformed transaction, missing fields, or invalid signatures
+
+**Details**:
+```typescript
+{
+  reason: 'Transaction payload is malformed',
+  txHash: '0x...'
+}
+```
+
+**Solution**:
+```typescript
+if (error.code === 'INVALID_TRANSACTION_SUBMISSION') {
+  console.error('Submission failed:', error.details.reason);
+  showMessage('Transaction could not be submitted. Please check the details and try again.');
+}
+```
+
+#### BALANCING_FAILED
+**Description**: Transaction balancing failed.
+
+**Cause**: Insufficient coins, mismatched inputs and outputs, or UTXO selection failure
+
+**Details**:
+```typescript
+{
+  reason: 'Not enough coins to balance transaction',
+  required: 1000n,
+  available: 500n
+}
+```
+
+**Solution**:
+```typescript
+if (error.code === 'BALANCING_FAILED') {
+  const { required, available } = error.details;
+  showMessage(`Balancing failed. Need ${required}, have ${available}.`);
+}
+```
+
+### Proof Server Errors
+
+#### PROOF_SERVER_UNREACHABLE
+**Description**: Cannot connect to the proof server.
+
+**Cause**: Proof server is down, network issue, or wrong URI
+
+**Solution**:
+```typescript
+if (error.code === 'PROOF_SERVER_UNREACHABLE') {
+  showMessage('Proof server is not available. Please try again later.');
+}
+```
+
+#### PROOF_REQUEST_REJECTED
+**Description**: Proof server rejected the proof request.
+
+**Cause**: Invalid circuit, unsupported operation, or request format error
+
+**Details**:
+```typescript
+{
+  reason: 'Circuit not supported by this prover',
+  circuit: 'transfer'
+}
+```
+
+**Solution**:
+```typescript
+if (error.code === 'PROOF_REQUEST_REJECTED') {
+  console.error('Proof rejected:', error.details.reason);
+}
+```
+
+#### PROOF_SERVER_TIMEOUT
+**Description**: Proof server did not respond in time.
+
+**Cause**: Server overload, complex proof, or network latency
+
+**Solution**:
+```typescript
+if (error.code === 'PROOF_SERVER_TIMEOUT') {
+  showMessage('Proof generation timed out. Please retry.');
+}
+```
+
 ## Error Handling Patterns
 
 ### Basic Pattern

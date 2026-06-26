@@ -14,7 +14,7 @@ Complete guide to running and managing Midnight Network infrastructure.
 | **Full Node** | Validate transactions, relay blocks | 4+ CPU, 8GB RAM, 100GB SSD |
 | **Archive Node** | Full history storage | 4+ CPU, 16GB RAM, 1TB SSD |
 | **Validator** | Produce blocks, consensus | 8+ CPU, 16GB RAM, 100GB SSD, stake |
-| **Indexer** | Query API for DApps | 4+ CPU, 8GB RAM, 500GB SSD |
+| **Indexer** | Query API for DApps | 4+ CPU, 8GB RAM, 500GB SSD, v4.3.3 |
 | **Proof Server** | Generate ZK proofs | 8+ CPU, 32GB RAM, GPU recommended |
 
 ## Quick Start
@@ -43,7 +43,7 @@ npm start
 | Indexer WS | 8088 | ws://localhost:8088/api/v4/graphql/ws |
 | Proof Server | 6300 | http://localhost:6300 |
 
-**Docker Images**: node 0.22.3, indexer 4.0.1, proof-server 8.0.3
+**Docker Images**: node 0.24.0, indexer 4.3.3, proof-server 8.0.3
 
 **Funding**: Use interactive menu to fund wallets with 50,000 tNIGHT each.
 
@@ -69,7 +69,7 @@ docker run -d \
   -p 9933:9933 \
   -p 9944:9944 \
   -v midnight-data:/data \
-  midnightnetwork/node:v0.12.0 \
+  midnightnetwork/node:v0.24.0 \
   --network testnet-02 \
   --pruning archive
 ```
@@ -85,7 +85,7 @@ docker run -d \
   -p 9944:9944 \
   --restart unless-stopped \
   -v validator-data:/data \
-  midnightnetwork/node:v0.12.0 \
+  midnightnetwork/node:v0.24.0 \
   --validator \
   --staking <stake-address>
 ```
@@ -101,7 +101,7 @@ docker run -d \
   -e DATABASE_URL=postgresql://postgres:password@db:5432/indexer \
   -e NETWORK=testnet-02 \
   --link midnight-postgres:db \
-  midnightnetwork/indexer:v4.0.0
+  midnightnetwork/indexer:v4.3.3
 ```
 
 ## Node Architecture
@@ -140,7 +140,7 @@ docker run -d \
 version: '3.8'
 services:
   node:
-    image: midnightnetwork/node:v0.12.0
+    image: midnightnetwork/node:v0.24.0
     ports:
       - "9933:9933"
       - "9944:9944"
@@ -156,7 +156,7 @@ services:
 version: '3.8'
 services:
   node:
-    image: midnightnetwork/node:v0.12.0
+    image: midnightnetwork/node:v0.24.0
     ports:
       - "9933:9933"
     environment:
@@ -173,7 +173,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
 
   indexer:
-    image: midnightnetwork/indexer:v4.0.0
+    image: midnightnetwork/indexer:v4.3.3
     ports:
       - "3100:3100"
     environment:
@@ -193,7 +193,7 @@ volumes:
 version: '3.8'
 services:
   validator:
-    image: midnightnetwork/node:v0.12.0
+    image: midnightnetwork/node:v0.24.0
     ports:
       - "9933:9933"
       - "9944:9944"
@@ -224,7 +224,7 @@ services:
 1. **Generate Keys**
 ```bash
 # Generate staking keypair
-docker run --rm -v keys:/keys midnightnetwork/node:v0.12.0 \
+docker run --rm -v keys:/keys midnightnetwork/node:v0.24.0 \
   keygen --output /keys/stash
 ```
 
@@ -239,7 +239,7 @@ docker run -d \
   -v keys:/keys \
   -e NETWORK=mainnet \
   -e VALIDATOR_KEY=stash.ss58 \
-  midnightnetwork/node:v0.12.0 \
+  midnightnetwork/node:v0.24.0 \
   --validator
 ```
 
@@ -280,7 +280,7 @@ docker run -d \
   -e DATABASE_URL=postgresql://postgres:secret@host:5432/indexer \
   -e NETWORK=testnet-02 \
   --link midnight-postgres:db \
-  midnightnetwork/indexer:v4.0.0
+  midnightnetwork/indexer:v4.3.3
 ```
 
 ### GraphQL API

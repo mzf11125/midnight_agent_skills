@@ -1,197 +1,142 @@
-# Midnight Network Agent Skills
+# MIDNIGHT EXPERT
 
-<div align="center">
+AI powered development tools for the Midnight blockchain. A suite of Claude Code agent skills that help you write, test, deploy, and verify smart contracts in the Compact language.
 
-![Version](https://img.shields.io/badge/version-2.0.1-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Skills](https://img.shields.io/badge/skills-4-orange.svg)
-![Docs](https://img.shields.io/badge/docs-comprehensive-purple.svg)
-![Status](https://img.shields.io/badge/status-production--ready-success.svg)
+## What is MIDNIGHT EXPERT?
 
-Complete set of 4 modular agent skills for building on Midnight Network's zero-knowledge blockchain.
+MIDNIGHT EXPERT extends AI coding assistants with deep knowledge of the Midnight Network. A data protection blockchain that uses zero-knowledge proofs to keep sensitive data off-chain.
 
-[Quick Start](#quick-start) • [Skills](#available-skills) • [Contributing](CONTRIBUTING.md) • [License](LICENSE)
+These skills give your AI assistant expertise in Compact (Midnight's smart contract language), privacy patterns, token flows, development tooling, and formal verification.
 
-</div>
+**ZK PROOFS NOT VIBES** · **20 SKILLS** · **COMPACT LANGUAGE** · **POWERED BY CLAUDE CODE**
 
 ---
 
-This project extends the Midnight Network with additional developer tooling.
+## The Skills
 
-## What is Midnight?
+### WRITE — Contract Authoring
 
-Midnight is a **zero-knowledge partner chain** to Cardano that enables privacy-preserving blockchain applications. It uses advanced ZK cryptography to let applications choose exactly what information to make public and what to keep private.
+| Skill | Description |
+|---|---|
+| `compact-core` | Full Compact smart contract development lifecycle: write, review, debug, test, deploy |
+| `compact-examples` | Curated reference contracts: OpenZeppelin style tokens, NFTs, access control patterns |
+| `compact-cli-dev` | CLI scaffolding with Oclif based patterns for deployment, wallet management, devnet control |
+| `core-concepts` | Educational foundation: architecture, privacy patterns, cryptographic protocols, ZK proofs |
+
+### VERIFY — Formal Verification
+
+| Skill | Description |
+|---|---|
+| `midnight-verify` | Multi method verification: compile, execute, type check, inspect source, E2E tests |
+| `midnight-cq` | Code quality enforcement: Biome linting, Vitest testing, Playwright E2E, CI pipelines |
+| `midnight-fact-check` | Fact checking pipeline: extract claims from docs, classify by domain, verify accuracy |
+| `midnight-expert` | Meta plugin for ecosystem diagnostics: health checks, version compatibility matrix |
+
+### SHIP — Deployment and Operations
+
+| Skill | Description |
+|---|---|
+| `midnight-dapp-dev` | DApp frontend scaffolding: Vite, React 19, shadcn templates, wallet integration |
+| `midnight-wallet` | Wallet SDK reference: test wallet management, DUST operations, MCP integration |
+| `midnight-tooling` | Development environment: CLI install, local devnet, diagnostics, status bar |
+
+### RUN — Infrastructure
+
+| Skill | Description |
+|---|---|
+| `midnight-node` | Node reference: Substrate architecture, runtime pallets, RPC, operations, governance |
+| `midnight-indexer` | Indexer reference: GraphQL API v4, data model, operational guidance |
+| `proof-server` | Proof server reference: architecture, API, configuration, monitoring |
+| `midnight-status-codes` | Error code catalog: node, ledger, indexer, wallet, SDK, proof server |
+| `midnight-plugin-utils` | Infrastructure utilities: dependency checking, plugin scanning, root resolution |
+
+### Consolidated References
+
+| Skill | Description |
+|---|---|
+| `midnight-concepts` | Consolidated foundational knowledge about Midnight zero knowledge blockchain |
+| `midnight-compact` | Consolidated guide to the Compact programming language |
+| `midnight-api` | Consolidated API integration for building DApps on Midnight |
+| `midnight-network` | Consolidated network infrastructure, validators, and operations |
+
+---
 
 ## Quick Start
 
 ```bash
-# Install all skills
 npx skills add https://github.com/mzf11125/midnight_agent_skills
-
-# Or install individual skills
-npx skills add https://github.com/mzf11125/midnight_agent_skills --skill midnight-concepts
-npx skills add https://github.com/mzf11125/midnight_agent_skills --skill midnight-compact
-npx skills add https://github.com/mzf11125/midnight_agent_skills --skill midnight-api
-npx skills add https://github.com/mzf11125/midnight_agent_skills --skill midnight-network
 ```
 
-## Available Skills
+This installs all 20 skills into your AI coding assistant.
 
-### 1. midnight-concepts
+## Installation
 
-**Purpose**: Foundational knowledge about Midnight's zero-knowledge architecture
+**Prerequisites:**
+- Claude Code or compatible AI coding assistant
+- Node.js >= 18.0.0
+- Compact CLI (for contract compilation)
+- Docker (for local devnet)
 
-**Key Topics** (from official docs + community):
+**Install all skills:**
 
-- **Kachina Protocol** - Core privacy architecture
-- **Privacy Mechanisms** - Zswap, selective disclosure
-- **UTXO + Account Hybrid** - Dual ledger model
-- **Zero-Knowledge Proofs** - Mathematical foundations
-- **Partner Chain** - Cardano integration
-- **Tokenomics** - NIGHT and DUST
-- **MIPs** - Improvement proposal process
+```bash
+npx skills add https://github.com/mzf11125/midnight_agent_skills
+```
 
-**Real-World DApp Examples from midnight-awesome-dapps:**
+**Verify installation:**
 
-- [LunarSwap](https://github.com/OpenZeppelin/midnight-apps) - UTXO-based DEX
-- [Hydra Stake](https://github.com/statera-protocol/hydra-stake-protocol) - Liquid staking
-- [Midnames](https://github.com/midnames/core) - ZK DID
-- [KYC Midnight](https://github.com/joacolinares/kyc-midnight) - KYC attestations
-- [DUST Generator](https://github.com/midnightntwrk/midnight-dust-generator) - Programmatic DUST for Preprod
-
-### 2. midnight-compact
-
-**Purpose**: Complete guide to the Compact programming language (v0.22+)
-
-**Key Topics:**
-
-- **Quick Start** - Minimal contracts in 10 minutes
-- **Type System** - Primitives, structs, enums, generics
-- **TypeScript Interop** - Complete type mappings
-- **Ledger Operations** - 7 state types (Counter, Set, Map, List, MerkleTree, etc.)
-- **ZK Circuit Patterns** - Privacy-preserving algorithms
-- **Standard Library** - Hashing, elliptic curve, coin management
-- **OpenZeppelin Contracts** - FungibleToken, MultiToken, NonFungibleToken
-- **CI/CD Integration** - setup-compact-action GitHub Action
-- **Midnight MCP** - AI-assisted development with 29 tools
-
-**Dev Tools from midnight-awesome-dapps:**
-
-- [Create Midnight App](https://github.com/midnightntwrk/create-mn-app) - CLI scaffold
-- [OpenZeppelin Compact Tools](https://github.com/OpenZeppelin/compact-tools)
-- [VS Code Extension](https://github.com/foxytanuki/compact-vscode)
-- [Compact Playground](https://github.com/Olanetsoft/compact-playground)
-- [setup-compact-action](https://github.com/midnightntwrk/setup-compact-action) - GitHub Action for CI/CD
-
-### 3. midnight-api
-
-**Purpose**: API integration for building DApps (v8.0+)
-
-**Key Topics:**
-
-- **Midnight.js SDK** - Complete TypeScript SDK (v4.x)
-- **DApp Connector** - Wallet integration (v4.0.4)
-- **Compact Runtime** - Contract execution (v0.15.0)
-- **Ledger API** - Blockchain operations (v8.0.3)
-- **Indexer API** - Blockchain queries
-- **ZSwap API** - Private transactions
-- **React Integration** - Frontend patterns
-- **Contract Deployment** - Local, **preprod** (active), mainnet
-
-**⚠️ Note**: Both **Preview** and **Testnet-02** are **discontinued**. Use **Preprod** for all testing.
-
-**SDKs from midnight-awesome-dapps:**
-
-- [Midday SDK](https://github.com/no-witness-labs/midday-sdk) - All-in-one TypeScript SDK
-- [midnight-wallet-cli](https://github.com/nel349/midnight-wallet-cli-hub) - Terminal wallet
-- [Midnight Local Dev](https://github.com/midnightntwrk/midnight-local-dev)
-
-### 4. midnight-network
-
-**Purpose**: Network infrastructure, validators, and operations
-
-**Key Topics:**
-
-- **Node Architecture** - Full node, archive node, light client
-- **Docker Deployment** - Production configurations
-- **Validator Operations** - Setup, consensus, monitoring
-- **Indexer Setup** - v4.0.0+ with GraphQL
-- **Monitoring** - Prometheus, Grafana
-- **Local Development** - midnight-local-dev, playground
-- **Troubleshooting** - Common issues
-
-**Official Network Endpoints** (from [relnotes/network.md](https://docs.midnight.network/relnotes/network.md)):
-
-| Network | RPC URL | Indexer | Status |
-|---------|--------|--------|--------|
-| Mainnet | https://rpc.mainnet.midnight.network | https://indexer.mainnet.midnight.network/api/v4/graphql | Production |
-| Preprod | https://rpc.preprod.midnight.network | https://indexer.preprod.midnight.network/api/v4/graphql | Active |
-| Preview | - | - | ⛔ Discontinued |
-
-**Infrastructure from midnight-awesome-dapps:**
-
-- [midnight-local-dev](https://github.com/midnightntwrk/midnight-local-dev) - Local full node
-- [Midnight MNN Helm](https://github.com/0xstrong/midnight-mnn-helm) - K8s deployment
-- [Midnight Explorer](https://www.midnightexplorer.com/) - Block explorer
+```bash
+npx skills list | grep midnight
+```
 
 ---
 
-## What You Can Build
+## Example Prompts
 
-These skills enable AI agents to:
+**Write a contract:**
+> "Create a new Midnight project with a shielded token contract"
 
-- ✅ Explain Midnight's zero-knowledge architecture
-- ✅ Write Compact smart contracts (v0.22+)
-- ✅ Integrate wallet connections and APIs
-- ✅ Deploy contracts to any environment
-- ✅ Test with unit, integration, and E2E tests
-- ✅ Run validators and indexers
-- ✅ Monitor infrastructure health
-- ✅ Troubleshoot issues
-- ✅ Reference real-world implementations from midnight-awesome-dapps
+**Review security:**
+> "Review my contract for privacy leaks and security issues"
 
-## Documentation Sources
+**Start devnet:**
+> "Start a local devnet and fund a test account"
 
-- **Official**: [docs.midnight.network](https://docs.midnight.network/)
-- **midnight-docs repo**: [github.com/midnightntwrk/midnight-docs](https://github.com/midnightntwrk/midnight-docs)
-- **Awesome DApps**: [github.com/midnightntwrk/midnight-awesome-dapps](https://github.com/midnightntwrk/midnight-awesome-dapps)
-- **Developer Academy**: [academy.midnight.network](https://academy.midnight.network/)
-- **Community Forum**: [forum.midnight.network](https://forum.midnight.network)
+**Verify behavior:**
+> "Verify that persistentHash returns Bytes less than 32"
+
+**Deploy to testnet:**
+> "Deploy my contract to Preprod and call the test function"
+
+---
 
 ## Design Principles
 
-- **Modular**: Each skill focuses on a specific domain
-- **Comprehensive**: From concepts to production deployment
-- **Practical**: Working examples and templates
-- **Progressive**: Quick start → detailed references
-- **Production-ready**: Tested and validated
+- **Modular**: Choose specific skills for your task or use all 20
+- **Comprehensive**: Covers the full Midnight development lifecycle
+- **Practical**: Real code examples, not just documentation summaries
+- **Progressive**: From beginner concepts to advanced ZK patterns
+- **Production Ready**: Community tested patterns and security best practices
 
-## Contributing
+## Documentation Sources
 
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-- 🐛 [Report a bug](https://github.com/mzf11125/midnight_agent_skills/issues)
-- 💡 [Request a feature](https://github.com/mzf11125/midnight_agent_skills/issues)
-- 📖 [Improve docs](https://github.com/mzf11125/midnight_agent_skills/pulls)
-
-## License
-
-MIT License - see [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- **Midnight Network Team** - Official documentation
-- **midnightntwrk** - midnight-docs repository
-- **midnight-awesome-dapps** - Community projects
-- **Contributors** - See [CONTRIBUTORS.md](CONTRIBUTORS.md)
-- **Community** - Feedback and testing
+All skills are built from and cross referenced with:
+- [Official Midnight Docs](https://docs.midnight.network)
+- [Compact Language Reference](https://docs.midnight.network/compact)
+- [Midnight.js SDK](https://docs.midnight.network/api-reference/midnight-js)
+- [Midnight Network Architecture](https://docs.midnight.network/concepts)
+- [Midnight Awesome DApps](https://github.com/midnightntwrk/midnight-awesome-dapps)
 
 ---
 
-<div align="center">
+## Links
 
-**Made with ❤️ for the Midnight Network community**
+- [GitHub Repository](https://github.com/mzf11125/midnight_agent_skills)
+- [Midnight Network](https://midnight.network)
+- [Midnight Docs](https://docs.midnight.network)
 
-[⬆ Back to top](#midnight-network-agent-skills)
+---
 
-</div>
+**PRIVACY BY DEFAULT · ZERO KNOWLEDGE · MIDNIGHT**
+
+MIT License · © 2026 Midnight Foundation

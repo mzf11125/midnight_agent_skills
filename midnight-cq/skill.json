@@ -1,0 +1,5 @@
+{
+  "name": "midnight-cq",
+  "description": "Code quality enforcement for Midnight projects. Biome linting, Vitest testing, Playwright E2E, and CI pipelines.",
+  "tags": ["midnight", "code-quality", "linting", "biome", "vitest", "playwright", "ci", "coverage"]
+}

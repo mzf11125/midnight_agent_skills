@@ -1,0 +1,5 @@
+{
+  "name": "midnight-status-codes",
+  "description": "Error code catalog for Midnight Network. Lookup for codes and types across node, ledger, indexer, wallet, SDK, and proof server.",
+  "tags": ["midnight", "errors", "status-codes", "troubleshooting", "debugging", "reference"]
+}
