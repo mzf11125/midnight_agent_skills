@@ -1,7 +1,7 @@
 {
   "name": "midnight-agent-skills",
-  "version": "2.0.2",
-  "description": "Complete set of 4 modular agent skills for building on Midnight Network's zero-knowledge blockchain",
+  "version": "3.0.0",
+  "description": "MIDNIGHT EXPERT: 20 modular agent skills for building on Midnight Network. 16 specialized plugins plus 4 consolidated references covering Compact contracts, zero-knowledge proofs, wallet SDK, DApp development, node operations, indexer, proof server, verification, code quality, error codes, and more.",
   "keywords": [
     "midnight",
     "midnight-network",
@@ -13,7 +13,16 @@
     "agent-skills",
     "ai-skills",
     "privacy",
-    "cryptography"
+    "cryptography",
+    "cardano",
+    "dapp",
+    "wallet",
+    "indexer",
+    "proof-server",
+    "validator",
+    "node",
+    "claude-code",
+    "midnight-expert"
   ],
   "author": {
     "name": "Zidan",
@@ -23,6 +32,9 @@
     {
       "name": "Zidan",
       "email": "mzidanfatonie@tawf.xyz"
+    },
+    {
+      "name": "Midnight Network Community"
     }
   ],
   "license": "MIT",
@@ -36,24 +48,104 @@
   "homepage": "https://github.com/mzf11125/midnight_agent_skills#readme",
   "skills": [
     {
+      "name": "core-concepts",
+      "path": "core-concepts",
+      "description": "Educational foundation: architecture, privacy patterns, ZK proofs"
+    },
+    {
+      "name": "compact-core",
+      "path": "compact-core",
+      "description": "Full Compact smart contract development lifecycle"
+    },
+    {
+      "name": "compact-examples",
+      "path": "compact-examples",
+      "description": "Curated reference contracts: OpenZeppelin style tokens and patterns"
+    },
+    {
+      "name": "compact-cli-dev",
+      "path": "compact-cli-dev",
+      "description": "CLI scaffolding: Oclif based CLIs for deployment and devnet control"
+    },
+    {
+      "name": "midnight-dapp-dev",
+      "path": "midnight-dapp-dev",
+      "description": "DApp frontend scaffolding: Vite, React 19, shadcn templates"
+    },
+    {
+      "name": "midnight-wallet",
+      "path": "midnight-wallet",
+      "description": "Wallet SDK reference, test wallet management, DUST operations"
+    },
+    {
+      "name": "midnight-fact-check",
+      "path": "midnight-fact-check",
+      "description": "Fact checking pipeline: extract, classify, verify claims from docs"
+    },
+    {
+      "name": "midnight-node",
+      "path": "midnight-node",
+      "description": "Node reference: Substrate architecture, pallets, RPC, operations"
+    },
+    {
+      "name": "midnight-indexer",
+      "path": "midnight-indexer",
+      "description": "Indexer reference: GraphQL API v4, data model, operations"
+    },
+    {
+      "name": "proof-server",
+      "path": "proof-server",
+      "description": "Proof server reference: architecture, API, configuration, monitoring"
+    },
+    {
+      "name": "midnight-tooling",
+      "path": "midnight-tooling",
+      "description": "Development environment: CLI install, local devnet, diagnostics"
+    },
+    {
+      "name": "midnight-expert",
+      "path": "midnight-expert",
+      "description": "Meta plugin: ecosystem diagnostics and health checks"
+    },
+    {
+      "name": "midnight-verify",
+      "path": "midnight-verify",
+      "description": "Multi method verification: compile, execute, type check, E2E tests"
+    },
+    {
+      "name": "midnight-cq",
+      "path": "midnight-cq",
+      "description": "Code quality enforcement: Biome linting, Vitest, Playwright, CI"
+    },
+    {
+      "name": "midnight-status-codes",
+      "path": "midnight-status-codes",
+      "description": "Error code catalog: node, ledger, indexer, wallet, SDK, proof server"
+    },
+    {
+      "name": "midnight-plugin-utils",
+      "path": "midnight-plugin-utils",
+      "description": "Infrastructure utilities: dependency checking, plugin scanning"
+    },
+    {
       "name": "midnight-concepts",
       "path": "midnight-concepts",
-      "description": "Foundational knowledge about Midnight's zero-knowledge blockchain"
+      "description": "Consolidated foundational knowledge about Midnight zero knowledge blockchain"
     },
     {
       "name": "midnight-compact",
       "path": "midnight-compact",
-      "description": "Complete guide to the Compact programming language"
+      "description": "Consolidated guide to the Compact programming language"
     },
     {
       "name": "midnight-api",
       "path": "midnight-api",
-      "description": "API integration for building DApps on Midnight"
+      "description": "Consolidated API integration for building DApps on Midnight"
     },
     {
       "name": "midnight-network",
       "path": "midnight-network",
-      "description": "Network infrastructure, validators, and operations"
+      "description": "Consolidated network infrastructure, validators, and operations"
     }
   ],
   "engines": {

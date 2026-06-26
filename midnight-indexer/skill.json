@@ -1,0 +1,5 @@
+{
+  "name": "midnight-indexer",
+  "description": "Indexer reference for Midnight Network. GraphQL API v4, data model, and operational guidance for querying on-chain state.",
+  "tags": ["midnight", "indexer", "graphql", "api", "data", "queries", "subscriptions"]
+}

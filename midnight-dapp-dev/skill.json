@@ -1,0 +1,5 @@
+{
+  "name": "midnight-dapp-dev",
+  "description": "DApp frontend scaffolding for Midnight Network. Vite plus React 19 plus shadcn templates, wallet integration, and provider architecture.",
+  "tags": ["midnight", "dapp", "react", "nextjs", "vite", "shadcn", "wallet", "frontend"]
+}

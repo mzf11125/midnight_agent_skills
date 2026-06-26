@@ -1,0 +1,5 @@
+{
+  "name": "midnight-wallet",
+  "description": "Wallet SDK reference for Midnight Network. Test-wallet management patterns, SDK regression checking, shielded and unshielded operations.",
+  "tags": ["midnight", "wallet", "dust", "zswap", "shielded", "unshielded", "mcp", "sdk"]
+}

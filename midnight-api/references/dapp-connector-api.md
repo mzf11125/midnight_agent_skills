@@ -498,6 +498,34 @@ const address = await connectedAPI.getUnshieldedAddress();
 // Returns: "mn_addr1..."
 ```
 
+## Available Types (v4.0.1)
+
+The `@midnight-ntwrk/dapp-connector-api` v4.0.1 package exports the following types:
+
+- `TxStatus`
+- `ExecutionStatus`
+- `HintUsage`
+- `HistoryEntry`
+- `KeyMaterialProvider`
+- `ProvingProvider`
+- `SignDataOptions`
+- `Signature`
+
+Import them directly from the package.
+
+```typescript
+import type {
+  TxStatus,
+  ExecutionStatus,
+  HintUsage,
+  HistoryEntry,
+  KeyMaterialProvider,
+  ProvingProvider,
+  SignDataOptions,
+  Signature
+} from '@midnight-ntwrk/dapp-connector-api';
+```
+
 ## Resources
 
 - **Specification**: https://github.com/midnightntwrk/midnight-dapp-connector-api/blob/main/docs/api/_media/SPECIFICATION.md

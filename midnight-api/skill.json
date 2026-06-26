@@ -1,5 +1,6 @@
 {
   "name": "midnight-api",
+  "version": "3.0.0",
   "description": "API integration for building DApps on Midnight Network",
   "tags": ["midnight", "api", "dapp", "integration", "wallet"]
 }

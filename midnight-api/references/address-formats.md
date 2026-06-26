@@ -214,6 +214,61 @@ If migrating from pre-v4.0.0:
 - [ ] Update documentation and examples
 - [ ] Test with Lace wallet (latest version)
 
+## Wallet SDK v3.0.0 Address Encoding
+
+The Wallet SDK v3.0.0 provides a dedicated address format package for encoding and decoding addresses.
+
+### Package
+
+`@midnight-ntwrk/wallet-sdk-address-format`
+
+### Import
+
+```typescript
+import {
+  MidnightBech32m,
+  UnshieldedAddress,
+  ShieldedAddress,
+  DustAddress,
+  ShieldedCoinPublicKey,
+  ShieldedEncryptionPublicKey
+} from '@midnight-ntwrk/wallet-sdk-address-format';
+```
+
+### Network IDs
+
+- `preprod`
+- `preview`
+- `undeployed`
+
+### Address Prefixes
+
+| Type | Prefix |
+|------|--------|
+| Unshielded | `mn_addr` |
+| Shielded | `mn_shield-addr` |
+| DUST | `mn_dust` |
+
+### Encoding
+
+Encode raw address data to a Bech32m string.
+
+```typescript
+const encoded = MidnightBech32m.encode(
+  networkId,
+  new UnshieldedAddress(rawBytes)
+).toString();
+```
+
+### Decoding
+
+Parse a Bech32m address string and decode it to the correct type.
+
+```typescript
+const parsed = MidnightBech32m.parse(address);
+const decoded = parsed.decode(UnshieldedAddress, networkId);
+```
+
 ## Resources
 
 - BIP 350 Specification: https://github.com/bitcoin/bips/blob/master/bip-0350.mediawiki

@@ -1,533 +1,263 @@
-# Wallet API Reference
+# Wallet SDK API Reference
 
-**Package**: `@midnight-ntwrk/wallet v5.0.0`
+**Package**: `@midnight-ntwrk/wallet-sdk-facade v3.0.0`
 
 ## Overview
 
-The Wallet API provides key management, transaction signing, and state synchronization for Midnight Network. It handles both shielded (private) and unshielded (public) operations.
+The Wallet SDK provides unified wallet operations, key management, and transfers for Midnight Network. It handles shielded and unshielded transactions, DUST management, and atomic swaps.
 
 ## Installation
 
 ```bash
-yarn add @midnight-ntwrk/wallet
+npm install @midnight-ntwrk/wallet-sdk-facade
 ```
 
-## Wallet Creation
+## Wallet Initialization
 
-### Generate New Wallet
-
-```typescript
-import { Wallet } from '@midnight-ntwrk/wallet';
-
-// Generate random wallet
-const wallet = await Wallet.generate();
-
-// Get seed phrase for backup
-const seedPhrase = wallet.getSeedPhrase();
-console.log('Backup seed phrase:', seedPhrase);
-```
-
-**Security**: Store seed phrase securely. Anyone with it can access funds.
-
-### From Seed Phrase
+### Create Wallet Instance
 
 ```typescript
-const seedPhrase = 'word1 word2 word3 ... word24';
-const wallet = await Wallet.fromSeedPhrase(seedPhrase);
-```
+import { WalletFacade } from '@midnight-ntwrk/wallet-sdk-facade';
 
-**Seed phrase**: 24-word BIP39 mnemonic.
-
-### From Private Key
-
-```typescript
-import { PrivateKey } from '@midnight-ntwrk/wallet';
-
-const privateKey = PrivateKey.fromHex('0x...');
-const wallet = await Wallet.fromPrivateKey(privateKey);
-```
-
-## Address Management
-
-### Get Addresses
-
-```typescript
-// Shielded address (private transactions)
-const shieldedAddress = wallet.getShieldedAddress();
-console.log('Shielded:', shieldedAddress);
-
-// Unshielded address (public transactions)
-const unshieldedAddress = wallet.getUnshieldedAddress();
-console.log('Unshielded:', unshieldedAddress);
-```
-
-**Address formats**: Both use Bech32m encoding (v4.0.0+).
-
-### Derive Multiple Addresses
-
-```typescript
-// Derive address at specific index
-const address0 = wallet.deriveShieldedAddress(0);
-const address1 = wallet.deriveShieldedAddress(1);
-
-// For account separation
-const savingsAddress = wallet.deriveShieldedAddress(1);
-const spendingAddress = wallet.deriveShieldedAddress(2);
-```
-
-**Use when**: Managing multiple accounts from one seed.
-
-## Key Management
-
-### Get Keys
-
-```typescript
-// Spending key (private)
-const spendingKey = wallet.getSpendingKey();
-
-// Viewing key (can see transactions, not spend)
-const viewingKey = wallet.getViewingKey();
-
-// Public key
-const publicKey = wallet.getPublicKey();
-```
-
-### Key Types
-
-```typescript
-interface PrivateKey {
-  toHex(): string;
-  toBytes(): Uint8Array;
-}
-
-interface PublicKey {
-  toHex(): string;
-  toBytes(): Uint8Array;
-  toAddress(): string;  // Convert to address
-}
-
-interface ViewingKey {
-  toHex(): string;
-  // Can decrypt transactions but not spend
-}
-```
-
-### Export Keys
-
-```typescript
-// Export for backup
-const privateKeyHex = wallet.getSpendingKey().toHex();
-const viewingKeyHex = wallet.getViewingKey().toHex();
-
-// Store securely (encrypted)
-await secureStorage.save('privateKey', privateKeyHex);
-```
-
-## State Synchronization
-
-### Sync with Indexer
-
-```typescript
-import { IndexerConfig } from '@midnight-ntwrk/wallet';
-
-const indexerUri = 'https://indexer.preprod.midnight.network';
-
-// Sync wallet state
-await wallet.sync(indexerUri);
-
-// Sync with progress callback
-await wallet.sync(indexerUri, {
-  onProgress: (current, total) => {
-    console.log(`Syncing: ${current}/${total} blocks`);
-  }
+// Initialize wallet (entry point)
+const wallet = await WalletFacade.init({
+  indexerUri: 'https://indexer.preprod.midnight.network',
+  proofServerUri: 'http://localhost:6300',
+  networkId: 'preprod',
 });
 ```
 
-**Purpose**: Scans blockchain for wallet's transactions.
+`WalletFacade.init()` is the entry point. There is no `create` method.
 
-### Auto-Sync
+### Start Wallet
 
 ```typescript
-// Start background sync
-wallet.startAutoSync(indexerUri, {
-  interval: 10000,  // 10 seconds
-  onError: (error) => console.error('Sync error:', error)
-});
+import { HDWallet, Roles } from '@midnight-ntwrk/wallet-sdk-facade';
 
-// Stop auto-sync
-wallet.stopAutoSync();
+// HD key derivation from seed
+const hdWallet = HDWallet.fromSeed(seed);
+
+// Derive keys using roles
+const shieldedKey = hdWallet.derive(Roles.Zswap);
+const dustKey = hdWallet.derive(Roles.Dust);
+const nightKey = hdWallet.derive(Roles.NightExternal);
+
+// Start wallet with secret keys
+await wallet.start(shieldedSecretKeys, dustSecretKey);
 ```
 
-### Get Sync Status
+### Stop Wallet
 
 ```typescript
-const status = wallet.getSyncStatus();
-console.log('Last synced block:', status.lastBlock);
-console.log('Is syncing:', status.isSyncing);
-console.log('Sync progress:', status.progress);
+await wallet.stop();
+```
+
+## HD Key Derivation
+
+### From Seed
+
+```typescript
+import { HDWallet, Roles } from '@midnight-ntwrk/wallet-sdk-facade';
+
+const hdWallet = HDWallet.fromSeed(seed);
+
+// Derive keys for different purposes
+const zswapKey = hdWallet.derive(Roles.Zswap);
+const dustKey = hdWallet.derive(Roles.Dust);
+const nightExternalKey = hdWallet.derive(Roles.NightExternal);
+```
+
+### Roles
+
+- `Roles.Zswap` - Shielded transaction keys
+- `Roles.Dust` - DUST generation keys
+- `Roles.NightExternal` - NIGHT token keys
+
+## Address Encoding
+
+### Encode Address
+
+```typescript
+import { MidnightBech32m } from '@midnight-ntwrk/wallet-sdk-facade';
+
+// Encode address to Bech32m format
+const encoded = MidnightBech32m.encode(networkId, address);
+```
+
+### Decode Address
+
+```typescript
+const [networkId, address] = MidnightBech32m.decode(encodedAddress);
 ```
 
 ## Balance Queries
 
-### Get All Balances
+### Get Synced Balances
 
 ```typescript
-const balances = wallet.getBalances();
+// Wait for wallet to sync, then access balances
+const syncedState = await wallet.waitForSyncedState();
 
-// Iterate balances
-for (const [tokenType, amount] of balances) {
-  console.log(`Token ${tokenType}: ${amount}`);
-}
+// Shielded balances
+const shieldedBalances = syncedState.shielded.balances;
+
+// Unshielded balances
+const unshieldedBalances = syncedState.unshielded.balances;
 ```
 
-**Returns**: Map of TokenType → bigint amount.
+Balance access goes through `wallet.waitForSyncedState()`. The result has `.shielded.balances` and `.unshielded.balances` properties.
 
-### Get Specific Token Balance
+## Transfers
 
-```typescript
-import { DUST_TOKEN_TYPE } from '@midnight-ntwrk/wallet';
-
-const dustBalance = wallet.getBalance(DUST_TOKEN_TYPE);
-console.log(`DUST balance: ${dustBalance}`);
-
-// Check sufficient funds
-if (dustBalance < 1000n) {
-  throw new Error('Insufficient DUST');
-}
-```
-
-### Shielded vs Unshielded Balances
+### Transfer Transaction (Recipe Pattern)
 
 ```typescript
-// Shielded balance (private)
-const shieldedBalance = wallet.getShieldedBalance(DUST_TOKEN_TYPE);
-
-// Unshielded balance (public)
-const unshieldedBalance = wallet.getUnshieldedBalance(DUST_TOKEN_TYPE);
-
-// Total
-const total = shieldedBalance + unshieldedBalance;
-```
-
-## Transaction History
-
-### Get Transactions
-
-```typescript
-// All transactions
-const txs = wallet.getTransactions();
-
-// Filter by token type
-const dustTxs = wallet.getTransactions({ tokenType: DUST_TOKEN_TYPE });
-
-// Paginated
-const recentTxs = wallet.getTransactions({ 
-  limit: 10, 
-  offset: 0 
-});
-```
-
-### Transaction Details
-
-```typescript
-interface Transaction {
-  hash: string;
-  blockNumber: bigint;
-  timestamp: number;
-  type: 'send' | 'receive' | 'shield' | 'unshield';
-  tokenType: TokenType;
-  amount: bigint;
-  fee: bigint;
-  status: 'pending' | 'confirmed' | 'failed';
-}
-
-// Get specific transaction
-const tx = wallet.getTransaction(txHash);
-console.log('Amount:', tx.amount);
-console.log('Status:', tx.status);
-```
-
-## Transaction Signing
-
-### Sign Transaction
-
-```typescript
-import { Transaction } from '@midnight-ntwrk/wallet';
-
-// Build transaction
-const unsignedTx = await buildTransaction({
-  from: wallet.getShieldedAddress(),
-  to: recipientAddress,
-  amount: 1000n,
-  tokenType: DUST_TOKEN_TYPE
+// Transfer uses a recipe pattern
+const recipe = await wallet.transferTransaction({
+  recipient: recipientAddress,
+  amount: amount,
+  tokenType: tokenType,
 });
 
-// Sign
-const signedTx = await wallet.signTransaction(unsignedTx);
+// Submit the transaction
+const txHash = await recipe.submit();
+```
+
+Transfers use `wallet.transferTransaction()` with a recipe pattern.
+
+## DUST Management
+
+### Register UTXOs for DUST Generation
+
+```typescript
+// Register NIGHT UTXOs to generate DUST
+await wallet.registerNightUtxosForDustGeneration();
+```
+
+### DUST Sponsorship
+
+```typescript
+// Create an unbound transaction for balance
+const unboundTx = await wallet.balanceUnboundTransaction();
+
+// Use sponsor wallet to finalize
+const finalizedTx = await sponsorWallet.balanceFinalizedTransaction(unboundTx);
 
 // Submit
-const txHash = await submitTransaction(signedTx, nodeUri);
+const txHash = await finalizedTx.submit();
 ```
 
-### Sign Message
+DUST sponsorship uses `balanceUnboundTransaction()` then `sponsorWallet.balanceFinalizedTransaction()`.
+
+## Atomic Swaps
+
+### Initialize Swap
 
 ```typescript
-// Sign arbitrary message
-const message = 'Hello Midnight';
-const signature = await wallet.signMessage(message);
-
-// Verify signature
-const isValid = await wallet.verifySignature(
-  message,
-  signature,
-  wallet.getPublicKey()
-);
-```
-
-### Batch Signing
-
-```typescript
-// Sign multiple transactions
-const signedTxs = await wallet.signTransactions([tx1, tx2, tx3]);
-
-// Submit all
-const txHashes = await Promise.all(
-  signedTxs.map(tx => submitTransaction(tx, nodeUri))
-);
-```
-
-## Coin Management
-
-### Get Coins
-
-```typescript
-// All unspent coins
-const coins = wallet.getCoins();
-
-// Filter by token type
-const dustCoins = wallet.getCoins({ tokenType: DUST_TOKEN_TYPE });
-
-// Filter by minimum value
-const largeCoins = wallet.getCoins({ minValue: 1000n });
-```
-
-### Coin Selection
-
-```typescript
-// Select coins for payment
-const selectedCoins = wallet.selectCoins({
-  tokenType: DUST_TOKEN_TYPE,
-  amount: 5000n,
-  strategy: 'minimize-inputs'  // or 'maximize-privacy'
+// Start an atomic swap
+const swap = await wallet.initSwap({
+  counterparty: counterpartyAddress,
+  offerToken: offerTokenType,
+  offerAmount: offerAmount,
+  wantToken: wantTokenType,
+  wantAmount: wantAmount,
 });
 
-console.log('Selected coins:', selectedCoins.length);
-console.log('Total value:', selectedCoins.reduce((sum, c) => sum + c.value, 0n));
+// Accept or complete swap
+await swap.complete();
 ```
 
-**Strategies**:
-- `minimize-inputs`: Fewer coins, lower fees
-- `maximize-privacy`: More coins, better privacy
+Atomic swaps use `wallet.initSwap()`.
 
-### Coin Details
+## Alternative Proving
 
-```typescript
-interface Coin {
-  tokenType: TokenType;
-  value: bigint;
-  nonce: Field;
-  index: bigint;  // Merkle tree position
-  isSpent: boolean;
-}
-```
-
-## Shielding & Unshielding
-
-### Shield Coins (Public → Private)
+### WASM Proving Service
 
 ```typescript
-// Move coins to shielded pool
-const shieldTx = await wallet.shield({
-  tokenType: DUST_TOKEN_TYPE,
-  amount: 1000n,
-  from: wallet.getUnshieldedAddress()
-});
+import { makeWasmProvingService } from '@midnight-ntwrk/wallet-sdk-facade';
 
-const signedTx = await wallet.signTransaction(shieldTx);
-await submitTransaction(signedTx, nodeUri);
-```
-
-### Unshield Coins (Private → Public)
-
-```typescript
-// Move coins from shielded pool
-const unshieldTx = await wallet.unshield({
-  tokenType: DUST_TOKEN_TYPE,
-  amount: 500n,
-  to: wallet.getUnshieldedAddress()
-});
-
-const signedTx = await wallet.signTransaction(unshieldTx);
-await submitTransaction(signedTx, nodeUri);
-```
-
-## Wallet Configuration
-
-### Set Network
-
-```typescript
-import { NetworkId } from '@midnight-ntwrk/wallet';
-
-wallet.setNetwork(NetworkId("preprod"));
-// or NetworkId.MainNet
-```
-
-### Configure Indexer
-
-```typescript
-wallet.setIndexer({
-  uri: 'https://indexer.preprod.midnight.network',
-  timeout: 30000,  // 30 seconds
-  retries: 3
-});
-```
-
-### Set Fee Strategy
-
-```typescript
-wallet.setFeeStrategy({
-  type: 'fixed',
-  amount: 10n
-});
-
-// Or dynamic fees
-wallet.setFeeStrategy({
-  type: 'dynamic',
-  multiplier: 1.5  // 1.5x base fee
-});
+// Use WASM for proof generation instead of proof server
+const provingService = makeWasmProvingService();
 ```
 
 ## Complete Example: Send Payment
 
 ```typescript
 import {
-  Wallet,
-  DUST_TOKEN_TYPE,
-  NetworkId
-} from '@midnight-ntwrk/wallet';
-import { submitTransaction } from '@midnight-ntwrk/ledger';
+  WalletFacade,
+  HDWallet,
+  Roles,
+  MidnightBech32m,
+} from '@midnight-ntwrk/wallet-sdk-facade';
 
 async function sendPayment(
-  seedPhrase: string,
+  seed: Uint8Array,
   recipientAddress: string,
   amount: bigint
 ) {
-  // 1. Load wallet
-  const wallet = await Wallet.fromSeedPhrase(seedPhrase);
-  wallet.setNetwork(NetworkId("preprod"));
-  
-  // 2. Sync state
-  const indexerUri = 'https://indexer.preprod.midnight.network';
-  await wallet.sync(indexerUri);
-  
-  // 3. Check balance
-  const balance = wallet.getBalance(DUST_TOKEN_TYPE);
-  const fee = 10n;
-  
-  if (balance < amount + fee) {
-    throw new Error(`Insufficient balance: ${balance}`);
-  }
-  
-  // 4. Build transaction
-  const tx = await wallet.buildTransaction({
-    to: recipientAddress,
-    amount,
-    tokenType: DUST_TOKEN_TYPE,
-    fee
+  // 1. Derive keys
+  const hdWallet = HDWallet.fromSeed(seed);
+  const shieldedKey = hdWallet.derive(Roles.Zswap);
+  const dustKey = hdWallet.derive(Roles.Dust);
+
+  // 2. Initialize and start wallet
+  const wallet = await WalletFacade.init({
+    indexerUri: 'https://indexer.preprod.midnight.network',
+    proofServerUri: 'http://localhost:6300',
+    networkId: 'preprod',
   });
-  
-  // 5. Sign transaction
-  const signedTx = await wallet.signTransaction(tx);
-  
-  // 6. Submit
-  const nodeUri = 'https://rpc.preprod.midnight.network';
-  const txHash = await submitTransaction(signedTx, nodeUri);
-  
-  console.log(`Transaction submitted: ${txHash}`);
-  
-  // 7. Wait for confirmation
-  await wallet.waitForTransaction(txHash, { timeout: 60000 });
-  
-  console.log('Transaction confirmed!');
-  
+  await wallet.start([shieldedKey], dustKey);
+
+  // 3. Wait for sync and check balance
+  const syncedState = await wallet.waitForSyncedState();
+  console.log('Shielded balances:', syncedState.shielded.balances);
+
+  // 4. Transfer
+  const recipe = await wallet.transferTransaction({
+    recipient: recipientAddress,
+    amount: amount,
+  });
+  const txHash = await recipe.submit();
+  console.log('Transaction submitted:', txHash);
+
+  // 5. Stop wallet
+  await wallet.stop();
   return txHash;
 }
 ```
 
 ## Security Best Practices
 
-### 1. Secure Seed Phrase Storage
+### Secure Key Storage
 
 ```typescript
-// ✅ Encrypt before storing
-const encrypted = await encrypt(seedPhrase, userPassword);
+// Encrypt seed before storing
+const encrypted = await encrypt(seed, userPassword);
 await secureStorage.save('wallet', encrypted);
 
-// ❌ Never store plaintext
-localStorage.setItem('seedPhrase', seedPhrase);  // INSECURE
+// Never store plaintext seed
+// localStorage.setItem('seed', seed); // INSECURE
 ```
 
-### 2. Use Viewing Keys for Read-Only
+### Clear Sensitive Data
 
 ```typescript
-// ✅ Share viewing key for auditing
-const viewingKey = wallet.getViewingKey();
-const readOnlyWallet = Wallet.fromViewingKey(viewingKey);
-
-// Can see transactions, cannot spend
-const balance = readOnlyWallet.getBalance(DUST_TOKEN_TYPE);
+// Stop wallet and clear on logout
+await wallet.stop();
 ```
 
-### 3. Validate Addresses
+### Validate Addresses
 
 ```typescript
-// ✅ Validate before sending
-import { isValidAddress } from '@midnight-ntwrk/wallet';
-
-if (!isValidAddress(recipientAddress)) {
+// Validate before sending
+try {
+  const [networkId, address] = MidnightBech32m.decode(recipientAddress);
+  if (networkId !== expectedNetworkId) {
+    throw new Error('Wrong network');
+  }
+} catch (error) {
   throw new Error('Invalid recipient address');
 }
-
-// ❌ Sending to invalid address
-await wallet.send(invalidAddress, amount);  // Funds lost
-```
-
-### 4. Handle Sync Errors
-
-```typescript
-// ✅ Retry on failure
-async function syncWithRetry(wallet: Wallet, maxRetries = 3) {
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      await wallet.sync(indexerUri);
-      return;
-    } catch (error) {
-      if (i === maxRetries - 1) throw error;
-      await sleep(1000 * (i + 1));  // Exponential backoff
-    }
-  }
-}
-```
-
-### 5. Clear Sensitive Data
-
-```typescript
-// ✅ Clear on logout
-wallet.clear();
-delete wallet;
-
-// Clear from memory
-if (global.gc) global.gc();
 ```
 
 ## Resources

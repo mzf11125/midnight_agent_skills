@@ -1,0 +1,5 @@
+{
+  "name": "midnight-verify",
+  "description": "Multi-method verification framework for Midnight contracts. Compile, execute, type-check, inspect source, and run end-to-end tests.",
+  "tags": ["midnight", "verify", "compile", "testing", "e2e", "type-check", "inspection"]
+}
