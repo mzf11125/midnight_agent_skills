@@ -723,4 +723,15 @@ Implement retry logic for transient failures such as network timeouts and proof 
 
 Handle permanent failures gracefully by presenting clear error messages to users. Log detailed error information for debugging while avoiding exposure of sensitive key material in logs.
 
+## Cross Reference Skills
+
+This skill covers wallet SDK and DUST operations. For related areas see these skills.
+
+- **midnight-concepts** — DUST tokenomics, Zswap protocol, shielded nature
+- **midnight-compact** — Token contracts, shielded transfers, coin operations
+- **midnight-api** — Wallet APIs, integration patterns, error handling
+- **midnight-network** — DUST generation on devnet, faucet operations
+- **midnight-dapp-dev** — Wallet connect UI, provider setup, transaction flow
+- **midnight-expert** — Wallet health checks, key material verification
+
 Provide recovery paths for common error scenarios such as insufficient DUST, invalid recipient addresses, and network congestion. Educate users about error causes and remediation steps.

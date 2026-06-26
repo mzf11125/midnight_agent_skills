@@ -438,6 +438,27 @@ curl -X POST http://localhost:9933 -H "Content-Type: application/json" \
 
 ## Resources
 
+## Cross Reference Skills
+
+This skill covers infrastructure and operations. For related areas see these skills.
+
+- **midnight-concepts** — Network architecture, consensus, cryptography
+- **midnight-compact** — Contract development, compilation, local devnet
+- **midnight-api** — Indexer queries, node RPC, proof server integration
+- **midnight-wallet** — DUST generation, wallet state, MCP operations
+- **midnight-dapp-dev** — Frontend deployment, provider configuration
+- **midnight-expert** — Health diagnostics, tool verification, compatibility matrix
+
+### Inline References
+
+- Node architecture: `references/node-architecture.md`
+- Node setup guide: `references/node-setup.md`
+- Validator guide: `references/validator-guide.md`
+- Indexer API: `references/api-reference.md`
+- Proof server operations: `references/operations.md`
+- Local devnet: `references/local-devnet.md`
+- Diagnostics: `references/diagnostics.md`
+
 - [Node Documentation](https://docs.midnight.network/nodes)
 - [Full Node Setup](https://docs.midnight.network/nodes/full-node)
 - [RPC Node Setup](https://docs.midnight.network/nodes/rpc-node)

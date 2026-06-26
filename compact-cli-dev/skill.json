@@ -1,5 +1,0 @@
-{
-  "name": "compact-cli-dev",
-  "description": "CLI scaffolding for Midnight projects. Oclif-based CLIs for contract deployment, wallet management, and devnet control.",
-  "tags": ["midnight", "compact", "cli", "oclif", "deployment", "devnet", "scaffolding"]
-}

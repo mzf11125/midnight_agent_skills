@@ -1,5 +1,0 @@
-{
-  "name": "compact-examples",
-  "description": "Curated reference contracts for Compact. OpenZeppelin-style tokens, NFTs, access control, pausable patterns, and tutorial contracts.",
-  "tags": ["midnight", "compact", "examples", "openzeppelin", "tokens", "nft", "access-control", "tutorials"]
-}

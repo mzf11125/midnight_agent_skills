@@ -1,112 +1,119 @@
-# Validator Guide
+# Midnight Validator Guide
 
-## Overview
+## Validator Registration
 
-Validators secure the Midnight Network by participating in consensus, producing blocks, and validating transactions.
+Becoming a validator requires registering a Stake Pool Operator identity. The SPO identity links your Cardano stake pool to a Midnight block production identity. Registration submits an onchain transaction that associates your public keys with your stake pool credentials.
 
-## Requirements
+### Generating Keys
 
-### Hardware
-- CPU: 4+ cores
-- RAM: 16GB+
-- Storage: 500GB+ SSD
-- Network: 100Mbps+
+Generate a set of cryptographic keys for validator operations. The block production key signs blocks during your assigned slots. The VRF key provides the randomness input for leader election. The session keys combine block production and VRF responsibilities. Store all keys in a secure keystore.
 
-### Software
-- Midnight Node software
-- Linux (Ubuntu 20.04+ recommended)
-- Docker (optional)
+### Registration Transaction
 
-### Stake
-- Minimum stake required (check current network parameters)
-- Stake locked during validation
-- Slashing risk for misbehavior
+Submit the registration transaction through the governance enqueue mechanism. Provide your SPO certificate, session keys, and a bond deposit. The deposit is refundable when you deregister as a validator. Registration takes effect at the start of the following epoch.
 
-## Setup
+## SPO Identity and Pool Management
 
-### 1. Install Node Software
-```bash
-wget https://releases.midnight.network/node-latest.tar.gz
-tar -xzf node-latest.tar.gz
-cd midnight-node
-```
+### Identity Binding
 
-### 2. Generate Keys
-```bash
-./midnight-node keys generate --output validator-keys.json
-```
+Your SPO identity is cryptographically bound to your Cardano stake pool. Proof of pool ownership is verified during registration. Changes to pool metadata on Cardano propagate to the Midnight chain through periodic sync operations.
 
-### 3. Configure Node
-Edit `config.yaml`:
-```yaml
-validator:
-  enabled: true
-  keys: validator-keys.json
-  stake: 1000000
-network:
-  listen: 0.0.0.0:30333
-  external: your-public-ip:30333
-```
+### Pool Parameters
 
-### 4. Start Validator
-```bash
-./midnight-node --config config.yaml
-```
+Configure pool parameters including the margin, fixed cost, and pledge amount. These parameters affect your delegation attractiveness and rewards calculation. Parameters can be updated between epochs.
 
-## Staking
+### Delegation
 
-### Stake Tokens
-```bash
-./midnight-node stake --amount 1000000
-```
+Token holders delegate their stake to SPOs to earn staking rewards. Delegation is non custodial meaning the delegator retains control of their tokens. Rewards are distributed proportional to the combined pool stake subject to the pool margin.
 
-### Unstake
-```bash
-./midnight-node unstake
-```
-Note: Unstaking has a cooldown period.
+## Staking Requirements
 
-## Monitoring
+### Minimum Stake
 
-### Check Status
-```bash
-./midnight-node status
-```
+Validators must maintain a minimum self stake to participate in block production. The minimum is enforced at epoch boundaries and insufficient stake results in exclusion from the active set.
 
-### View Logs
-```bash
-tail -f logs/validator.log
-```
+### Bonding Period
 
-### Metrics
-- Block production rate
-- Missed blocks
-- Peer connections
-- Sync status
+Staked tokens have an unbonding period before they become transferable. This period protects against long range attacks by making stake slashing enforceable. The unbonding period is measured in epochs.
 
-## Rewards
+### Slashing Conditions
 
-- Block rewards for producing blocks
-- Transaction fees
-- Distributed proportionally to stake
-- Claimed automatically or manually
+Validators can be slashed for equivocation, censorship, or prolonged unavailability. Equivocation occurs when a validator signs conflicting blocks at the same height. Slashing penalties are proportional to the severity of the offense and the validator's stake.
 
-## Slashing
+## Epoch Performance Tracking
 
-Validators can be slashed for:
-- Double signing blocks
-- Extended downtime
-- Invalid block production
+### Block Production Metrics
 
-Slashing results in:
-- Loss of staked tokens
-- Temporary or permanent ban
+Track the number of blocks you are assigned versus the number you successfully produce. Target a production rate near 100 percent. Missed blocks reduce your rewards and affect network performance.
 
-## Best Practices
+### Committee Participation
 
-1. **High Availability**: Use redundant infrastructure
-2. **Monitoring**: Set up alerts for downtime
-3. **Security**: Secure validator keys, use firewalls
-4. **Updates**: Keep node software up to date
-5. **Backup**: Backup keys and configuration
-6. **Testing**: Test on preprod first
+During your committee term track attendance at consensus rounds. Each missed round degrades the committee's ability to reach agreement. Consistent participation builds a reputation that influences future committee selection weight.
+
+### Dashboard Integration
+
+Export metrics to a Prometheus compatible endpoint. Use Grafana dashboards to visualize epoch performance trends, resource utilization, and node health. Configure alerts for missed blocks, high resource usage, or connectivity issues.
+
+## Committee Participation
+
+### Epoch Assignment
+
+Committee membership rotates each epoch based on stake weighted random selection. The selection algorithm uses a verifiable random function seeded by previous epoch data. All members receive equal voting weight within the committee.
+
+### Consensus Rounds
+
+Each round of block production involves committee members reaching agreement on the next block. Your node must be running and responsive during your assigned slots. Network latency between committee members directly affects block time.
+
+### Backup Planning
+
+Operate a standby node that can take over if your primary node fails. The standby node should share the same keys and be located in a different geographic region. Practice failover procedures regularly.
+
+## Rewards Claiming
+
+### Reward Calculation
+
+Block production rewards are calculated at epoch boundaries based on blocks produced and committee participation. Additional rewards come from transaction fees and protocol inflation. The reward formula accounts for your pool's total stake and performance metrics.
+
+### Claiming Process
+
+Rewards accumulate in a rewards account and must be claimed through an onchain transaction. Claiming is permissionless meaning anyone can trigger the claim for any validator. Unclaimed rewards do not expire but do not compound until claimed.
+
+### Reward Distribution
+
+After claiming, rewards are distributed between the SPO and delegators according to the pool parameters. The margin determines the SPO share and the remainder is split among delegators proportional to their stake.
+
+## Monitoring and Alerting
+
+### Health Metrics
+
+Monitor node uptime, block production rate, peer count, and sync status. Track disk usage growth and memory consumption trends. Set thresholds that trigger alerts before resources become exhausted.
+
+### Alert Configuration
+
+Configure alerts for critical conditions including missed blocks, node downtime, low peer count, and RPC unavailability. Use multiple notification channels such as email, chat platforms, and pager duty integrations.
+
+### Log Aggregation
+
+Ship logs to a centralized log management system. Structure logs in JSON format for easier querying and analysis. Retain logs for a sufficient period to support incident investigation.
+
+## Security Best Practices
+
+### Key Management
+
+Store validator keys in a hardware security module or dedicated key management service. Never store keys on the node's filesystem unencrypted. Rotate session keys periodically while keeping the SPO identity key stable.
+
+### Network Isolation
+
+Place the validator node behind a firewall that blocks direct internet access. Use a sentry architecture where a proxy node faces the public internet and relays traffic to the secured validator. The sentry filters malicious traffic and reduces attack surface.
+
+### Access Control
+
+Restrict SSH access to validator servers to specific IP addresses and enforce key based authentication. Use a jump host or VPN for administrative access. Audit all access attempts and maintain an access log.
+
+### Update Policy
+
+Monitor release announcements and security advisories. Apply security patches within 24 hours of release. Test updates on a staging node before deploying to production. Maintain the ability to roll back to a previous version.
+
+### Incident Response
+
+Prepare an incident response plan covering key compromise, node failure, and network attacks. Document procedures for emergency key rotation and stake withdrawal. Conduct periodic drills to verify response readiness.

@@ -1,500 +1,103 @@
-# Midnight Network Architecture
+# Midnight Architecture
 
 ## Overview
 
-Midnight is a partner chain to Cardano, designed to provide privacy-preserving smart contract capabilities while inheriting Cardano's security and decentralization.
+Midnight is a Layer 1 blockchain that combines public verification with private computation. The network uses a novel three-part contract model and a hybrid state architecture to achieve data protection by default while preserving the guarantees of a decentralized ledger.
 
-## Partner Chain Architecture
+## Three-Part Contract Structure
 
-### What is a Partner Chain?
+Every Midnight application consists of three distinct components that work together.
 
-A partner chain is a separate blockchain that connects to and inherits security from a main chain (Cardano), rather than being completely independent.
+### Replicated Component
 
-### Benefits of Partner Chain Design
+The replicated component runs on every validator node and operates on public state. It handles deterministic logic that must be visible to all network participants. Public ledger updates, token transfers involving unshielded balances, and contract initialization all happen within the replicated component. This component executes in the standard blockchain execution environment and produces state transitions that validators can independently verify.
 
-**Security Inheritance**:
-- Leverages Cardano's proven consensus mechanism
-- Benefits from Cardano's validator network
-- Inherits economic security model
+### Zero-Knowledge Circuit
 
-**Specialized Capabilities**:
-- Optimized for privacy (ZK proofs, Zswap)
-- Custom virtual machine for Compact contracts
-- Privacy-specific features not possible on main chain
+The ZK circuit encodes the private computation rules of the application. It defines what witnesses (private inputs) the prover must supply and what constraints the computation must satisfy. The circuit itself is public and is stored on chain. Anyone can inspect it to understand what rules govern the private computation. The circuit produces a proof that attests to correct execution without revealing the private inputs.
 
-**Interoperability**:
-- Bridge assets between Cardano and Midnight
-- Leverage Cardano's ecosystem
-- Unified security model
+### Local Component
 
-### How It Works
+The local component runs exclusively on the user's machine. It manages witness generation, interfaces with private state providers, and orchestrates proof creation. This component never executes on chain. It holds the user's private data, constructs the witness values needed by the circuit, and submits proofs for verification. The local component is the bridge between the user's private world and the public blockchain.
 
-1. **Cardano Main Chain**: Provides security anchor
-2. **Midnight Partner Chain**: Executes privacy-preserving contracts
-3. **Bridge**: Enables asset transfer between chains
-4. **Shared Validators**: Can validate both chains
+## Kachina Protocol
 
-## Consensus Mechanism
+Kachina is the underlying protocol that separates application logic into the three-component model described above. It defines how the replicated component, ZK circuit, and local component communicate through standardized interfaces. Kachina ensures that the public execution environment never sees private data while still being able to verify that private computations follow the rules.
 
-### Ouroboros-Based Consensus
+The protocol defines a strict boundary between what runs on chain and what runs off chain. State transitions that touch public state happen in the replicated component. State transitions that involve private data produce ZK proofs in the local component and submit only the proof (not the data) to the chain.
 
-Midnight uses a variant of Ouroboros, Cardano's proof-of-stake consensus protocol.
+## Hybrid UTXO and Account Model
 
-**Key Properties**:
-- Provably secure (peer-reviewed research)
-- Energy efficient (proof-of-stake)
-- Decentralized validator selection
-- Finality guarantees
+Midnight uses a hybrid state model that combines features of both the UTXO model and the account model.
 
-### Validator Participation
+### UTXO Layer
 
-**Staking**:
-- Validators stake tokens to participate
-- Economic incentive for honest behavior
-- Slashing for misbehavior
+The UTXO layer manages shielded transactions. Each shielded coin is represented as a commitment on chain with a corresponding nullifier that marks it as spent. When a user sends a shielded transaction, they consume existing coin commitments by revealing nullifiers, and they create new coin commitments for the recipient. The amounts, sender, and recipient remain hidden.
 
-**Block Production**:
-- Validators selected based on stake
-- Produce blocks in assigned slots
-- Include transactions and proofs
+### Account Layer
 
-**Rewards**:
-- Block rewards for validators
-- Transaction fees
-- Distributed based on stake and performance
+The account layer manages public state through traditional account-based storage. Contracts have persistent storage slots that the replicated component can read and write. This layer handles unshielded token balances, contract code, and any application state that does not require privacy.
+
+### Interaction Between Layers
+
+Users can move value between the shielded UTXO pool and the unshielded account layer. Moving from unshielded to shielded (a shielding operation) creates a new coin commitment. Moving from shielded to unshielded (an unshielding operation) reveals the amount publicly while preserving the sender's privacy through the nullifier mechanism.
+
+## Impact VM
+
+The Impact VM is Midnight's execution environment for the replicated component. It is a deterministic virtual machine that processes public state transitions in every block.
+
+### Execution Model
+
+The Impact VM follows a simple execution loop. For each block, it processes a sequence of transactions in order. Each transaction specifies a contract to call and the public inputs to provide. The VM loads the contract's replicated component code, executes it against the current public state, and produces new public state as output.
+
+### Proof Verification
+
+When a transaction includes a ZK proof (from a private computation), the Impact VM verifies the proof before allowing any public state changes that depend on it. This ensures that private computations satisfy the circuit constraints before they can affect public state.
+
+### Gas and Fees
+
+The Impact VM meters computation through a gas model. Each operation consumes a predetermined amount of gas. Proof verification is a significant cost factor. Users pay fees in the network's native currency, and these fees compensate validators for the computational work of executing transactions and verifying proofs.
 
 ## Network Layers
 
-### Layer 1: Blockchain Layer
-
-**Components**:
-- Block production and validation
-- Transaction ordering
-- State commitment
-- Consensus
-
-**Responsibilities**:
-- Maintain global state
-- Verify zero-knowledge proofs
-- Enforce protocol rules
-- Distribute rewards
-
-### Layer 2: State Channels (Hydra)
-
-**Components**:
-- Off-chain transaction processing
-- State channel management
-- Dispute resolution
-
-**Responsibilities**:
-- Enable high-throughput transactions
-- Provide instant finality off-chain
-- Settle final state on Layer 1
-
-## Core Components
-
-### Midnight Node
-
-The core network software that:
-- Validates transactions and blocks
-- Maintains blockchain state
-- Participates in consensus
-- Serves network data
-
-**Key Functions**:
-- Block production (for validators)
-- Transaction validation
-- Proof verification
-- State synchronization
-
-### Midnight Indexer
-
-Database service that:
-- Indexes blockchain data
-- Provides query interface
-- Tracks contract state
-- Enables efficient data access
-
-**Use Cases**:
-- DApp data queries
-- Historical transaction lookup
-- Contract state inspection
-- Analytics and monitoring
-
-### Proof Server
-
-Specialized service for:
-- Generating zero-knowledge proofs
-- Optimized proving hardware
-- Proof caching
-- Delegated proving
-
-**Benefits**:
-- Offload computation from clients
-- Faster proof generation
-- Better user experience
-- Shared infrastructure
-
-## Virtual Machine
-
-### Compact VM
-
-Purpose-built virtual machine for executing Compact smart contracts.
-
-**Design Goals**:
-- Efficient ZK proof generation
-- Deterministic execution
-- Gas metering for resource control
-- Security and isolation
-
-**Execution Model**:
-1. Compile Compact to VM bytecode
-2. Execute contract logic
-3. Generate ZK proofs of execution
-4. Verify proofs on-chain
-
-### State Management
-
-**On-Chain State**:
-- Contract storage
-- Zswap coin commitments
-- Nullifier set (prevent double-spending)
-- Global parameters
-
-**Off-Chain State**:
-- User wallet state
-- Private keys and secrets
-- Unspent coin information
-- Local transaction history
+Midnight's network architecture divides responsibilities across five layers.
 
-## Security Model
+### Consensus Layer
 
-### Cryptographic Security
+The consensus layer runs the proof-of-stake protocol that determines which validator produces the next block. Validators stake the native token, and the protocol selects block producers based on stake weight. The consensus layer produces finalized blocks that contain ordered sets of transactions.
 
-**Assumptions**:
-- Elliptic curve discrete logarithm hardness
-- Collision-resistant hash functions
-- Secure ZK proof system
+### Peer-to-Peer Layer
 
-**Guarantees**:
-- Transaction validity
-- Privacy preservation
-- Double-spend prevention
-- State integrity
+The P2P layer handles node discovery, connection management, and message propagation. Nodes find each other through a distributed hash table and maintain persistent connections to a set of peers. Transactions, blocks, and proofs propagate across the network through this layer.
 
-### Economic Security
+### Storage Layer
 
-**Stake-Based Security**:
-- Validators have economic stake
-- Misbehavior results in slashing
-- Rewards incentivize honest behavior
+The storage layer maintains the blockchain state. Public state lives in a key-value store indexed by contract address and storage key. The UTXO set lives in a separate commitment tree that supports efficient membership proofs. Historical blocks and their associated proofs are archived for full nodes.
 
-**Attack Costs**:
-- 51% attack requires majority stake
-- Economically infeasible for well-staked network
-- Slashing increases attack cost
+### RPC Layer
 
-### Network Security
+The RPC layer exposes APIs for clients to interact with the network. Clients submit transactions through this layer, query public state, and request proof generation status. The RPC layer also serves as the entry point for indexer queries that provide structured access to on-chain data.
 
-**Peer-to-Peer Network**:
-- Decentralized node communication
-- Gossip protocol for transaction propagation
-- DDoS resistance
-- Sybil attack protection
+### Transaction Layer
 
-## Cardano Integration
+The transaction layer handles transaction validation, ordering within blocks, and the mempool that holds pending transactions before inclusion. Transactions are cryptographically signed and include the necessary public inputs, proofs (if applicable), and fee information.
 
-### Asset Bridge
+## Privacy by Default
 
-**Bridging Mechanism**:
-- Lock assets on Cardano
-- Mint equivalent on Midnight
-- Burn on Midnight to unlock on Cardano
+A core design principle of Midnight is that privacy is the default, not an opt-in feature. The architecture enforces this in several ways.
 
-**Security**:
-- Cryptographic proofs of lock/unlock
-- Validator consensus on bridge operations
-- No trusted intermediaries
+All user balances in the shielded pool are private by construction. Contract state is public by default (consistent with blockchain transparency requirements), but the architecture encourages developers to keep sensitive data off chain and submit only proofs. The three-part contract model makes it natural to separate public verification from private data.
 
-### Shared Security
+The Zswap protocol handles shielded transactions automatically. Developers building token contracts do not need to implement their own privacy mechanisms. The network provides privacy at the protocol level rather than requiring each application to build it from scratch.
 
-**Validator Overlap**:
-- Cardano validators can also validate Midnight
-- Shared economic security
-- Coordinated upgrades
+## Validator and Prover Separation
 
-**Checkpoint System**:
-- Midnight state checkpointed on Cardano
-- Additional security layer
-- Recovery mechanism
+Midnight separates the roles of validators and provers. Validators run the consensus protocol, execute the replicated component, verify proofs, and maintain the blockchain state. Provers (the local component) run on user machines, generate witnesses, and create proofs.
 
-## Development by IOG
+This separation is important for scalability. Proof generation is computationally intensive but can be done in parallel by many users. Proof verification is relatively fast and can be handled by validators as part of block processing. Users with more powerful hardware can generate proofs faster, but all validators can verify those proofs with the same efficiency.
 
-### Research-First Approach
+## Network Configuration
 
-**Process**:
-1. Peer-reviewed academic research
-2. Formal specification
-3. Implementation
-4. Formal verification
+Midnight supports multiple deployment environments. The local development environment runs a full stack (consensus, P2P, storage, RPC) in Docker containers for testing. The pre-production network provides a staging environment for integration testing before mainnet deployment. The mainnet is the production network with real economic value at stake.
 
-**Benefits**:
-- High assurance of correctness
-- Proven security properties
-- Academic rigor
-- Long-term thinking
-
-### Open Source
-
-**Philosophy**:
-- All code publicly available
-- Community review and contribution
-- Transparent development
-- No hidden backdoors
-
-**Repositories**:
-- Midnight node
-- Compact compiler
-- SDKs and tools
-- Documentation
-
-### Team Expertise
-
-**Cryptographers**:
-- Zero-knowledge proof systems
-- Privacy-preserving protocols
-- Formal security analysis
-
-**Programming Language Researchers**:
-- Compact language design
-- Type systems
-- Compiler optimization
-
-**Distributed Systems Experts**:
-- Consensus protocols
-- Network architecture
-- Scalability solutions
-
-## Network Topology
-
-### Node Types
-
-**Validator Nodes**:
-- Participate in consensus
-- Produce blocks
-- Require stake
-
-**Full Nodes**:
-- Validate all transactions
-- Maintain full blockchain state
-- Don't produce blocks
-
-**Light Clients**:
-- Verify block headers only
-- Query full nodes for data
-- Minimal resource requirements
-
-### Network Communication
-
-**Gossip Protocol**:
-- Efficient transaction propagation
-- Block distribution
-- Peer discovery
-
-**RPC Interface**:
-- Query blockchain data
-- Submit transactions
-- Monitor network status
-
-## Scalability
-
-### Current Approach
-
-**Layer 1**:
-- Optimized block size and timing
-- Efficient proof verification
-- Parallel transaction processing
-
-**Layer 2**:
-- State channels (Hydra)
-- Off-chain computation
-- Batch settlement
-
-### Future Enhancements
-
-**Sharding** (Potential):
-- Parallel chain execution
-- Increased throughput
-- Maintained security
-
-**Rollups** (Potential):
-- Batch transactions off-chain
-- Submit proofs on-chain
-- Scalability with security
-
-## Governance
-
-### Protocol Upgrades
-
-**Process**:
-- Proposal submission
-- Community discussion
-- Validator voting
-- Coordinated activation
-
-**Considerations**:
-- Backward compatibility
-- Security implications
-- Community consensus
-
-### Parameter Adjustment
-
-**Adjustable Parameters**:
-- Block size and timing
-- Fee structure
-- Reward distribution
-- Consensus parameters
-
-**Governance Mechanism**:
-- On-chain voting
-- Stake-weighted decisions
-- Gradual parameter changes
-
-## Comparison to Other Architectures
-
-### vs. Ethereum L2s
-- **Midnight**: Partner chain with own consensus
-- **L2s**: Rely on Ethereum for security
-- **Trade-off**: More independence vs simpler security model
-
-### vs. Independent Chains
-- **Midnight**: Inherits Cardano security
-- **Independent**: Build security from scratch
-- **Trade-off**: Shared security vs full autonomy
-
-### vs. Privacy Coins (Zcash, Monero)
-- **Midnight**: Programmable privacy (smart contracts)
-- **Privacy Coins**: Transaction privacy only
-- **Trade-off**: Flexibility vs simplicity
-
----
-
-## DUST vs NIGHT: The Dual-Token Model
-
-> Source: "DUST vs NIGHT: Rethinking How Blockchains Handle Value and Fees" — Neeraj Choubisa
-
-Most blockchains use one token for everything (ETH pays gas AND stores value). Midnight splits these responsibilities.
-
-### NIGHT — the asset layer
-
-- Fixed supply (24 billion)
-- Public (unshielded)
-- Used for: governance, staking, consensus, block rewards, exchange trading
-- Think of it as solar panels
-
-### DUST — the resource layer
-
-- Not a traditional token — it's a resource generated by NIGHT
-- You don't buy or trade it; you earn it by holding NIGHT
-- Used exclusively to pay transaction fees
-- Leftover DUST returns to you after a transaction
-- Non-transferable between users
-- Decays to zero if you stop backing it with NIGHT (prevents hoarding)
-- Think of it as electricity generated by the solar panels
-
-### Why this matters for developers
-
-- Transaction costs are **predictable** — DUST regenerates at a fixed rate from NIGHT holdings, decoupled from market speculation
-- Enterprises can budget for on-chain compute in advance
-- Protects against MEV attacks
-- DUST transactions are **shielded** — no public fee tracking, no visible activity graph
-
-### Shielded vs Unshielded tokens
-
-Developers choose per-contract:
-- **Unshielded** → public (like ETH), good for DeFi composability
-- **Shielded** → private via ZK proofs, good for sensitive data
-
-### Viewing keys
-
-Share a viewing key to give selective read access to your private transactions (for compliance/auditing). **Irreversible once shared.**
-
----
-
-## Mainnet Architecture & Roadmap
-
-> Source: "Midnight Mainnet Is Live. The Privacy Stack Just Got Real." — Barnabas
-
-Mainnet genesis block: **March 30, 2026**. Launched in a federated model ("guarded era") with 9 institutional validator partners.
-
-### Current stable versions (mainnet launch)
-
-- Compact: 0.28.0
-- midnight-js: 3.0.0
-- wallet-sdk: 1.0.0
-- Proof Server: 7.0.0
-
-### Architecture highlights
-
-**Hybrid dual-state model**: UTXO + account-based in a single atomic step. Public state on-chain (unshielded), private state in off-chain execution environment. The Kachina Protocol bridges them.
-
-**Client-side proofs**: ZK proofs generated on the user's device via a local proof server. Sensitive data never leaves the user's machine.
-
-**Selective disclosure**: Developers control what's public vs private at the contract level. Example: verify KYC status without storing personal data on-chain.
-
-### Roadmap phases
-
-| Phase | Timing | Key milestone |
-|---|---|---|
-| Kūkolu | Now | Federated mainnet live, first production DApps |
-| Mōhalu | Mid-2026 | Cardano SPOs as block producers, DUST Capacity Exchange, staking rewards |
-| Hua | Late 2026 | Hybrid DApps — Midnight privacy layer embeddable into other chains |
-
-### AI coding tools and Midnight
-
-General-purpose AI assistants (Claude, Cursor, Copilot) don't have Compact training data and generate hallucinated code. Use the **Midnight MCP server** to give AI tools structured access to Compact docs and static analysis. Downloaded 6,000+ times via npm.
-
----
-
-## AI Agent Identity on Midnight
-
-> Source: "Selective Disclosure & Self-Managing DIDs for AI Agents" — Alex Pestchanker
-
-AI agents increasingly act autonomously — executing transactions, accessing sensitive data, representing users. But there's no standardized identity or trust framework for agents.
-
-### The problem
-
-| Capability | Maturity |
-|---|---|
-| Autonomy | High |
-| Intelligence | High |
-| Access to sensitive data | High |
-| Identity & trust model | Extremely low |
-
-Agents commonly store API keys in plain text, access personal data, and execute transactions — with no formal identity layer.
-
-### Midnight as the identity execution layer
-
-Midnight's programmable privacy makes it suited for agent identity:
-- Confidential smart contracts
-- Shielded data handling
-- Selective disclosure primitives (prove attributes without revealing raw data)
-
-### Core components for agent identity
-
-**Agent DID**: Each agent has a unique DID with public/private key pair and associated verifiable credentials.
-
-**Agent Vault**: A secure execution boundary — the agent never directly handles raw secrets, it requests controlled access from the vault. Stores private keys, credentials, API keys, and enforces access policies.
-
-**Selective Disclosure Engine**: Generates proofs instead of raw data. Examples:
-- "Payment Authorized" without revealing wallet balance
-- "KYC verified" without sharing identity
-- "Valid Agent Identity" without exposing owner
-
-**Policy Engine**: Defines what the agent is allowed to do, under what conditions, with which credentials.
-
-### MVP
-
-Prototype: https://github.com/apestchanker/midnight-agent-did-manager
-
-⚠️ Research prototype, not production-ready. Demonstrates DID generation, VC association, and selective disclosure preparation.
+Each environment has its own chain ID, genesis block, and network parameters. Applications should parameterize their network configuration so they can switch between environments without code changes.

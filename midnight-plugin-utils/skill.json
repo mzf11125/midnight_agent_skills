@@ -1,5 +1,0 @@
-{
-  "name": "midnight-plugin-utils",
-  "description": "Infrastructure utilities for Midnight plugins. Dependency checking, plugin scanning, and root resolution.",
-  "tags": ["midnight", "utilities", "dependencies", "scanning", "infrastructure", "plugins"]
-}

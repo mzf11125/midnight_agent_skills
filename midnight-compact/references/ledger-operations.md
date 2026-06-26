@@ -1,681 +1,198 @@
-# Ledger Operations
+# Ledger Operations in Compact
 
 ## Overview
 
-Ledger operations manage **on-chain state** in Compact contracts. The ledger is the public, replicated state visible to all network participants.
+Ledger operations in Compact manage the persistent state of a contract. The Midnight ledger stores data that survives across transactions and blocks, providing the durable memory that contracts need to track balances, ownership, and other application state. Compact provides three ledger storage abstractions with different tradeoffs.
 
-## Ledger Declarations
+## StateValue
 
-### Syntax
-```compact
-ledger fieldName: LedgerType;
-export ledger publicField: Type;
-sealed ledger immutableField: Type;
+`StateValue<T>` stores a single value of type T in the ledger. It is the simplest state abstraction and is appropriate for storing scalar values like a single counter, a total supply, or a single owner address.
+
+### Declaration
+
+StateValue is declared as a module-level variable with an explicit type parameter.
+
+```
+ledger totalSupply: StateValue<Uint<128>>;
+ledger owner: StateValue<Bytes<32>>;
 ```
 
-- **`ledger`**: Declares on-chain state
-- **`export`**: Makes field visible outside contract
-- **`sealed`**: Immutable after constructor (can only be set during initialization)
+The `ledger` keyword indicates that the variable is stored in persistent blockchain state rather than in the circuit's transient memory.
 
-### Example
-```compact
-ledger counter: Counter;
-export ledger totalSupply: Uint<64>;
-sealed ledger owner: Bytes<32>;
+### Reading
+
+Reading a StateValue returns a Cell containing the current value. The Cell wrapper enables the modify-and-write-back pattern.
+
+```
+let current: Cell<Uint<128>> = read(totalSupply);
+let value: Uint<128> = current;  // the actual value
 ```
 
-## Ledger State Types
+### Writing
 
-### 1. Cell<T> (Implicit)
+Writing a StateValue updates the stored value. The new value must be explicitly provided.
 
-**Any Compact type becomes a Cell automatically.**
-
-```compact
-ledger value: Field;           // Actually Cell<Field>
-ledger flag: Boolean;          // Actually Cell<Boolean>
-ledger data: Bytes<32>;        // Actually Cell<Bytes<32>>
+```
+write(totalSupply, newSupply);
 ```
 
-#### Operations
-```compact
-// Read
-const v = value.read();
-const v = value;  // Shorthand
+### Atomic Read and Write
 
-// Write
-value.write(42);
-value = 42;  // Shorthand
+The read-then-write pattern is atomic. Between reading and writing in the same circuit function, no other transaction can modify the value. This atomicity is guaranteed by the consensus protocol and eliminates race conditions that plague other smart contract platforms.
 
-// Reset to default
-value.reset_to_default();
+## StateMap
+
+`StateMap<K, V>` stores a mapping from keys of type K to values of type V. It is the workhorse state abstraction for most contracts, used for balance maps, allowance maps, and any other key-value storage.
+
+### Declaration
+
+```
+ledger balances: StateMap<Bytes<32>, Uint<128>>;
+ledger allowances: StateMap<Bytes<32>, StateMap<Bytes<32>, Uint<128>>>;
 ```
 
-### 2. Counter
+StateMap keys can be any fixed-size type (Uint, Bytes, or a struct of fixed-size fields). Nested StateMaps are allowed, as shown in the allowances example above.
 
-**Monotonic counter that can only increment/decrement.**
+### Reading
 
-```compact
-ledger count: Counter;
+Reading from a StateMap requires a key. The read returns the value associated with that key or a default value if the key has never been written.
+
+```
+let balance: Uint<128> = read(balances, alice_address);
 ```
 
-#### Operations
-```compact
-// Read
-const c = count.read();
-const c = count;  // Shorthand
+If the key does not exist in the map, the read returns the type's zero value (0 for Uint types, 0x00... for Bytes types). There is no way to distinguish between a key that has never been written and a key that was written with the zero value. If this distinction matters, use a separate StateMap to track which keys exist.
 
-// Increment
-count.increment(5);
-count += 5;  // Shorthand
+### Writing
 
-// Decrement
-count.decrement(3);
-count -= 3;  // Shorthand
+Writing to a StateMap associates a value with a key.
+
+```
+write(balances, alice_address, newBalance);
 ```
 
-#### Use Cases
-- Vote counts
-- Token supply tracking
-- Round numbers (for unlinkability)
-- Sequence numbers
+Writing a value of zero is allowed and is indistinguishable from a key that has never been written. If the application requires distinguishing absent keys from zero values, consider using a non-zero sentinel or a separate existence map.
 
-### 3. Set<T>
+### Iteration
 
-**Unordered collection of unique values.**
+StateMap does not support iteration. The set of keys in a StateMap is not directly available to circuit functions. If the contract needs to operate on all entries, the caller must supply the list of keys as a witness input and the circuit can verify each one individually.
 
-```compact
-ledger participants: Set<Address>;
-ledger usedNonces: Set<Bytes<32>>;
+## StateBoundedMerkleTree
+
+`StateBoundedMerkleTree<K, V>` stores key-value pairs in a Merkle tree structure. It supports membership proofs (proving that a key-value pair exists in the tree) and non-membership proofs (proving that a key does not exist in the tree). It is used for the shielded UTXO set and other applications requiring efficient cryptographic proofs of inclusion.
+
+### Declaration
+
+```
+ledger coinTree: StateBoundedMerkleTree<Bytes<32>, Bytes<64>>;
 ```
 
-#### Operations
-```compact
-// Insert
-participants.insert(address);
+The first type parameter is the key type and the second is the value type. The tree has a fixed maximum depth specified at contract deployment time.
 
-// Remove
-participants.remove(address);
+### Insertion
 
-// Contains
-const exists = participants.contains(address);
+Inserting a key-value pair into the Merkle tree requires providing the key, the value, and the leaf index where the pair should be inserted.
 
-// Size
-const size = participants.size();
-
-// Clear
-participants.clear();
+```
+insert(coinTree, leafIndex, key, value);
 ```
 
-#### Use Cases
-- Whitelist/blacklist addresses
-- Track used nonces
-- Membership lists
-- Unique identifiers
+The insertion operation modifies the Merkle root stored in the ledger. The new root commits to the updated set of entries.
 
-### 4. Map<K, V>
+### Membership Proofs
 
-**Key-value mapping.**
+A membership proof demonstrates that a particular key-value pair exists at a specific leaf index in the tree. The proof includes the Merkle path from the leaf to the root.
 
-```compact
-ledger balances: Map<Address, Uint<64>>;
-ledger metadata: Map<Bytes<32>, Bytes<256>>;
+```
+let isMember: Boolean = isMember(coinTree, key, value, merklePath);
 ```
 
-#### Operations
-```compact
-// Insert
-balances.insert(address, 1000);
+The circuit can constrain `isMember` to be true, ensuring that the claimed key-value pair genuinely exists in the tree before proceeding with operations that depend on that pair.
 
-// Lookup (returns V or nested state type)
-const balance = balances.lookup(address).read();
+### Non-Membership Proofs
 
-// Remove
-balances.remove(address);
+A non-membership proof demonstrates that a particular leaf index contains either no entry or a different entry than the one claimed.
 
-// Contains
-const exists = balances.contains(address);
-
-// Size
-const size = balances.size();
+```
+let notMember: Boolean = isNonMember(coinTree, key, merklePath);
 ```
 
-#### Nested State Types
-```compact
-ledger nested: Map<Address, Counter>;
+Non-membership proofs are important for nullifier schemes. They prove that a particular leaf position does not already contain a spent coin commitment.
 
-// Initialize nested counter
-nested.insert(address, default<Counter>);
+## Hash and Commit Patterns
 
-// Use nested counter
-nested.lookup(address).increment(1);
+Compact provides four hashing modes for state operations, each with different properties regarding persistence and visibility.
+
+### persistentHash
+
+`persistentHash` hashes data and stores the result permanently in the ledger. The hash is visible to validators and persists across transactions.
+
+```
+let commitment: Bytes<32> = persistentHash(data);
 ```
 
-#### Use Cases
-- Token balances
-- User profiles
-- Configuration settings
-- Nested data structures
+Use persistentHash when the commitment must be available for verification by any future transaction. Coin commitments and contract state roots use persistentHash.
 
-### 5. List<T>
+### persistentCommit
 
-**Ordered collection with index access.**
+`persistentCommit` is similar to persistentHash but specifically for committing to private state values. The commitment is stored on chain, and the original data can be proven against it later.
 
-```compact
-ledger items: List<Bytes<32>>;
-ledger history: List<Uint<64>>;
+```
+let stateCommitment: Bytes<32> = persistentCommit(privateState);
 ```
 
-#### Operations
-```compact
-// Push (append)
-items.push("item1");
+### transientHash
 
-// Get by index
-const item = items.get(0);
+`transientHash` hashes data but does not store the result. The hash exists only during the current circuit execution and is useful for intermediate computations.
 
-// Set by index
-items.set(0, "updated");
-
-// Length
-const len = items.length();
-
-// Pop (remove last)
-const last = items.pop();
+```
+let tempHash: Bytes<32> = transientHash(intermediateData);
 ```
 
-#### Use Cases
-- Event logs
-- Transaction history
-- Ordered queues
-- Time-series data
+TransientHashe are not stored on chain and cannot be referenced by future transactions. They are purely for use within the current circuit's constraint system.
 
-### 6. MerkleTree<n, T>
+### transientCommit
 
-**Merkle tree for efficient membership proofs.**
+`transientCommit` creates a commitment that exists only for the current transaction. It is used when the commitment is needed for constraint purposes but does not need to persist.
 
-```compact
-ledger coinTree: MerkleTree<32, Bytes<32>>;  // 2^32 capacity
+```
+let tempCommitment: Bytes<32> = transientCommit(ephemeralData);
 ```
 
-#### Operations
-```compact
-// Insert at index
-coinTree.insert(index, commitment);
+## State Lifecycle
 
-// Get by index
-const value = coinTree.get(index);
+### degradeToTransient
 
-// Root hash
-const root = coinTree.root();
+`degradeToTransient` converts a persistent state value to transient. The value is removed from persistent storage and becomes available only within the current transaction.
 
-// Verify proof
-const valid = coinTree.verify(index, value, proof);
+```
+degradeToTransient(myState);
 ```
 
-#### Parameters
-- **`n`**: Tree depth (1 < n ≤ 32)
-- **Capacity**: 2^n leaves
-- **`T`**: Leaf value type
+This operation is useful for archiving old state or for transitioning state from persistent to ephemeral.
 
-#### Use Cases
-- Coin commitments (Zswap)
-- Nullifier sets
-- Efficient membership proofs
-- Privacy-preserving state
+### upgradeFromTransient
 
-### 7. HistoricMerkleTree<n, T>
+`upgradeFromTransient` converts a transient state value to persistent. The value is written to the ledger and becomes available to future transactions.
 
-**Merkle tree that maintains historical roots.**
-
-```compact
-ledger stateTree: HistoricMerkleTree<32, Bytes<32>>;
+```
+upgradeFromTransient(myState);
 ```
 
-#### Operations
-Same as MerkleTree, plus:
-```compact
-// Get historical root
-const oldRoot = stateTree.rootAt(blockNumber);
+This operation is used when ephemeral computations produce results that should be preserved.
 
-// Verify against historical root
-const valid = stateTree.verifyHistoric(index, value, proof, blockNumber);
-```
+## Alignment and Encoding
 
-#### Use Cases
-- State snapshots
-- Historical proofs
-- Rollback verification
-- Audit trails
+### Data Alignment
 
-## Syntactic Sugar
+State values must be aligned to their natural boundaries. The Compact compiler handles alignment automatically based on the type's size. Misaligned values are rejected at compile time.
 
-### Cell Operations
-```compact
-// Long form
-value.write(42);
-const x = value.read();
+### Encoding
 
-// Short form (preferred)
-value = 42;
-const x = value;
-```
+State values are encoded in a canonical binary format before being written to the ledger. The encoding scheme is deterministic: the same value always produces the same bytes. This ensures that state commitments are consistent across different provers and validators.
 
-### Counter Operations
-```compact
-// Long form
-counter.increment(5);
-counter.decrement(3);
-const c = counter.read();
+The default encoding for Uint values is big-endian. Bytes values are stored as-is. Structs are encoded by concatenating the encodings of their fields in order. The CompactType TypeScript classes use the same encoding scheme, ensuring consistency between the Compact layer and the TypeScript layer.
 
-// Short form (preferred)
-counter += 5;
-counter -= 3;
-const c = counter;
-```
+### State Commitment Root
 
-### Ledger Assignment
-```compact
-// These are equivalent
-ledgerField.write(value);
-ledgerField = value;
-```
-
-## Kernel Operations
-
-**Special operations that don't depend on specific ledger state.**
-
-```compact
-import CompactStandardLibrary;
-
-// Get contract's own address
-const addr = kernel.self();
-
-// Other kernel operations available
-```
-
-## Disclosure
-
-**Making private data public on the ledger.**
-
-```compact
-witness secretValue(): Field;
-
-export circuit publishValue(): [] {
-  const secret = secretValue();
-  
-  // Disclose makes it public
-  publicValue = disclose(secret);
-}
-```
-
-- **`disclose()`**: Marks data for public ledger storage
-- **Without disclose**: Data stays private in proof
-- **Use carefully**: Once disclosed, permanently public
-
-## Constructor Initialization
-
-```compact
-constructor(initialOwner: Bytes<32>, initialSupply: Uint<64>) {
-  owner = disclose(initialOwner);
-  totalSupply = disclose(initialSupply);
-  balances.insert(initialOwner, initialSupply);
-}
-```
-
-- **Sealed fields**: Can only be set in constructor
-- **Regular fields**: Can be set in constructor or circuits
-- **Must disclose**: Values from parameters
-
-## Sealed Fields
-
-```compact
-sealed ledger owner: Bytes<32>;
-sealed ledger maxSupply: Uint<64>;
-
-constructor(ownerAddr: Bytes<32>) {
-  owner = disclose(ownerAddr);  // ✅ OK in constructor
-  maxSupply = disclose(1000000);
-}
-
-export circuit changeOwner(newOwner: Bytes<32>): [] {
-  owner = disclose(newOwner);  // ❌ ERROR: sealed field
-}
-```
-
-**Use sealed for**:
-- Contract configuration
-- Immutable parameters
-- Owner addresses (if unchangeable)
-- Maximum limits
-
-## Complete Example: Token Contract
-
-```compact
-pragma language_version 0.16;
-import CompactStandardLibrary;
-
-// Ledger state
-export ledger totalSupply: Uint<64>;
-ledger balances: Map<Address, Uint<64>>;
-sealed ledger owner: Bytes<32>;
-
-// Constructor
-constructor(ownerAddr: Bytes<32>, initialSupply: Uint<64>) {
-  owner = disclose(ownerAddr);
-  totalSupply = disclose(initialSupply);
-  balances.insert(ownerAddr, initialSupply);
-}
-
-// Transfer tokens
-export circuit transfer(to: Address, amount: Uint<64>): [] {
-  const from = ownAddress();
-  
-  // Check balance
-  const balance = balances.lookup(from).read();
-  assert(balance >= amount, "Insufficient balance");
-  
-  // Update balances
-  balances.lookup(from).decrement(amount);
-  
-  // Initialize recipient if needed
-  if (!balances.contains(to)) {
-    balances.insert(to, 0);
-  }
-  balances.lookup(to).increment(amount);
-}
-
-// Get balance
-export circuit balanceOf(addr: Address): Uint<64> {
-  if (balances.contains(addr)) {
-    return balances.lookup(addr).read();
-  }
-  return 0;
-}
-
-// Mint (owner only)
-export circuit mint(amount: Uint<64>): [] {
-  witness ownerSecret(): Bytes<32>;
-  
-  const secret = ownerSecret();
-  const pk = hash(secret);
-  assert(pk == owner, "Not owner");
-  
-  totalSupply += amount;
-  balances.lookup(owner).increment(amount);
-}
-```
-
-## Nested State Example
-
-```compact
-// Nested counters in map
-ledger userScores: Map<Address, Counter>;
-
-export circuit initUser(user: Address): [] {
-  // Must initialize nested state
-  userScores.insert(user, default<Counter>);
-}
-
-export circuit incrementScore(user: Address, points: Uint<32>): [] {
-  // Use nested counter
-  userScores.lookup(user).increment(points);
-}
-
-export circuit getScore(user: Address): Uint<64> {
-  // Read nested counter (shorthand)
-  return userScores.lookup(user);
-}
-```
-
-## Nested Maps Example
-
-```compact
-// Map of maps
-ledger permissions: Map<Address, Map<Resource, Boolean>>;
-
-export circuit grantPermission(user: Address, resource: Resource): [] {
-  // Initialize inner map if needed
-  if (!permissions.contains(user)) {
-    permissions.insert(user, default<Map<Resource, Boolean>>);
-  }
-  
-  // Set permission
-  permissions.lookup(user).insert(resource, true);
-}
-
-export circuit checkPermission(user: Address, resource: Resource): Boolean {
-  if (!permissions.contains(user)) {
-    return false;
-  }
-  
-  const userPerms = permissions.lookup(user);
-  if (!userPerms.contains(resource)) {
-    return false;
-  }
-  
-  return userPerms.lookup(resource).read();
-}
-```
-
-## Best Practices
-
-### 1. Initialize Nested State
-```compact
-// ❌ WRONG - will fail
-ledger counters: Map<Address, Counter>;
-counters.lookup(addr).increment(1);  // ERROR: not initialized
-
-// ✅ CORRECT
-counters.insert(addr, default<Counter>);
-counters.lookup(addr).increment(1);
-```
-
-### 2. Check Existence
-```compact
-// ✅ Safe
-if (balances.contains(addr)) {
-  const balance = balances.lookup(addr).read();
-}
-
-// ⚠️ Unsafe - may fail if not exists
-const balance = balances.lookup(addr).read();
-```
-
-### 3. Use Appropriate Types
-```compact
-// ❌ Overkill
-ledger simpleFlag: Map<Address, Boolean>;
-
-// ✅ Better
-ledger allowedUsers: Set<Address>;
-
-// ❌ Inefficient for counters
-ledger voteCount: Map<VoteId, Uint<64>>;
-
-// ✅ Better
-ledger voteCount: Map<VoteId, Counter>;
-```
-
-### 4. Minimize Ledger Operations
-```compact
-// ❌ Multiple reads
-const a = field.read();
-const b = field.read();
-const c = field.read();
-
-// ✅ Single read
-const value = field.read();
-const a = value;
-const b = value;
-const c = value;
-```
-
-### 5. Use Sealed for Immutability
-```compact
-// ✅ Configuration that shouldn't change
-sealed ledger maxUsers: Uint<32>;
-sealed ledger contractVersion: Uint<8>;
-```
-
-## Common Patterns
-
-### Pattern 1: Token Balance
-```compact
-ledger balances: Map<Address, Uint<64>>;
-
-circuit transfer(to: Address, amount: Uint<64>): [] {
-  const from = ownAddress();
-  balances.lookup(from).decrement(amount);
-  if (!balances.contains(to)) {
-    balances.insert(to, 0);
-  }
-  balances.lookup(to).increment(amount);
-}
-```
-
-### Pattern 2: Access Control
-```compact
-sealed ledger owner: Bytes<32>;
-ledger admins: Set<Address>;
-
-circuit requireOwner(): [] {
-  witness ownerSecret(): Bytes<32>;
-  assert(hash(ownerSecret()) == owner, "Not owner");
-}
-
-circuit requireAdmin(): [] {
-  assert(admins.contains(ownAddress()), "Not admin");
-}
-```
-
-### Pattern 3: Nonce Tracking
-```compact
-ledger usedNonces: Set<Bytes<32>>;
-
-circuit useNonce(nonce: Bytes<32>): [] {
-  assert(!usedNonces.contains(nonce), "Nonce already used");
-  usedNonces.insert(nonce);
-}
-```
-
-### Pattern 4: Event Log
-```compact
-ledger events: List<Bytes<64>>;
-
-circuit logEvent(eventData: Bytes<64>): [] {
-  events.push(eventData);
-}
-
-circuit getEvent(index: Uint<32>): Bytes<64> {
-  return events.get(index);
-}
-```
-
-## Performance Considerations
-
-### Storage Costs
-- **Cell**: Minimal (single value)
-- **Counter**: Minimal (single value)
-- **Set**: Grows with elements
-- **Map**: Grows with entries
-- **List**: Grows with length
-- **MerkleTree**: Fixed size (2^n capacity)
-
-### Operation Costs
-- **Read**: Fast
-- **Write**: Moderate
-- **Insert/Remove**: Moderate
-- **Merkle operations**: Expensive (cryptographic)
-
-### Optimization Tips
-1. **Batch operations** when possible
-2. **Use Counters** instead of Uint in Maps
-3. **Prune old data** from Lists/Sets
-4. **Use MerkleTrees** for large datasets
-5. **Minimize nested lookups**
-
-## Resources
-
-- **Ledger ADT Reference**: https://docs.midnight.network/compact/reference/ledger-adt
-- **Type System**: See type-system.md
-- **Circuit Semantics**: See circuit-semantics.md
-- **Standard Library**: See standard-library.md
-
----
-
-## Maps vs Merkle Trees: The State Dichotomy
-
-> Source: "Working with Maps and Merkle Trees in Compact" — Nasihudeen Jimoh, Midnight Aliit
-
-The core question when choosing a storage structure: **"Does the network need to know *who* owns this data, or only *that* they own it?"**
-
-| Metric | Map | MerkleTree |
-|---|---|---|
-| Data Visibility | Fully Public | Root Public; Leaves/Paths Private |
-| Access Pattern | Key-Based (Direct) | Path-Based (Indirect) |
-| Privacy Model | Transparent Association | Set Membership Anonymity |
-| Proof Complexity | Low O(1) | High O(depth) hashes |
-| Primary Use | Registries, Public Indices | Anonymous Allowlists, Confidential Voting |
-| State Bloat | Linear per entry | Fixed O(1) on-chain root |
-
-### Map operations
-
-```compact
-export ledger registry: Map<Bytes<32>, Bytes<32>>;
-
-export circuit register(profile_hash: Bytes<32>): [] {
-    const user = ownPublicKey();
-    registry.insert(user.bytes, disclose(profile_hash));  // disclose() required
-}
-```
-
-- `insert(k, v)` — creates or overwrites
-- `lookup(k)` — returns value or type default (never throws)
-- `member(k)` — Boolean existence check, cheaper than lookup
-- `remove(k)` — deletes entry, prevents state bloat
-
-### Merkle Tree membership proof
-
-```compact
-export ledger allowlist: MerkleTree<20, Bytes<32>>;  // depth 20 = ~1M entries
-
-witness get_membership_path(leaf: Bytes<32>): MerkleTreePath<20, Bytes<32>>;
-
-export circuit access_exclusive_area(leaf: Bytes<32>): [] {
-    const d_leaf = disclose(leaf);
-    const path = get_membership_path(d_leaf);
-    const computed_root = merkleTreePathRoot<20, Bytes<32>>(path);
-    assert(allowlist.checkRoot(disclose(computed_root)), "Access Denied");
-}
-```
-
-**The double disclosure pattern** is required:
-1. `disclose(leaf)` — ensures the proof corresponds to the exact data provided
-2. `disclose(computed_root)` — required for `checkRoot` to compare against public ledger state (reveals nothing private since the root is already public)
-
-### Depth selection trade-off
-
-Higher depth = more capacity but larger ZK circuit and slower proof generation. A depth-32 tree on mobile can take significantly longer than depth-16. Choose the minimum depth that fits your use case.
-
-### SDK: use `findPathForLeaf`, not manual construction
-
-The `@midnight-ntwrk/compact-runtime` performs strict `instanceof` checks. Manually constructing a `MerkleTreePath` as a JSON literal will fail even if the fields match.
-
-```typescript
-// CORRECT: use the SDK method
-get_membership_path(context, leaf) {
-  const path = context.ledger.allowlist.findPathForLeaf(leaf);
-  if (!path) throw new Error("Leaf not found: state mismatch");
-  return path;
-}
-```
-
-### Historic Merkle Trees for high-traffic apps
-
-Because every new leaf invalidates the root, concurrent users can have their proofs fail mid-generation. `HistoricMerkleTree` allows verifying against any root within the last N blocks, providing a synchronization window.
-
-### Best practices
-
-- **Disclose as late as possible** — directly before the ledger operation that requires it
-- **Sync block height** — ensure your client matches the block height of the Merkle root on-chain; outdated paths are the most common cause of `checkRoot` failures
-- **Cache `MerkleTreePath`** in private state for frequent verifications, invalidate when the ledger root changes
+The ledger maintains a single state commitment root that commits to all persistent state. Every read and write operation contributes to this root through Merkle hashing. The root changes when state is written and remains constant when state is only read. The state root is included in every block header, enabling light clients to verify state inclusion without downloading the full state.

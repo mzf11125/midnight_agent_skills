@@ -465,5 +465,20 @@ When a diagnostic produces a recommendation, Midnight Expert tracks whether that
 
 ### Community Contributions
 
-New diagnostics and improvements to existing diagnostics can be contributed by the community. Contribution guidelines ensure that new diagnostics follow the established patterns for implementation, testing, and documentation. Community contributed diagnostics are reviewed for accuracy and safety before being merged.
+New diagnostics and improvements to existing diagnostics can be contributed by the community. Contribution guidelines ensure that new diagnostics follow the established patterns for implementation, testing, and documentation. ## Cross Reference Skills
+
+This skill provides ecosystem diagnostics and meta coordination. For domain specific content see these skills.
+
+- **midnight-concepts** — Architecture foundations, privacy, tokenomics
+- **midnight-compact** — Contract development lifecycle and compilation
+- **midnight-api** — SDK integration, verification, code quality
+- **midnight-network** — Infrastructure, nodes, indexers, proof server
+- **midnight-wallet** — Wallet operations, DUST, key management
+- **midnight-dapp-dev** — Frontend scaffolding, wallet connection UI
+
+### Inline References
+
+- Fact check pipeline: `references/pipeline.md`
+
+Community contributed diagnostics are reviewed for accuracy and safety before being merged.
 

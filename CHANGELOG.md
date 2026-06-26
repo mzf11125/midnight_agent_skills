@@ -5,205 +5,79 @@ All notable changes to the Midnight Agent Skills project will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2026-06-27
+
+### Changed
+
+**Consolidated from 20 skills to 7 modular skills with deep reference files.**
+
+Each of the 7 skills now absorbs all specialized content as reference files with full cross references between skills. This keeps the modular clarity while dramatically reducing directory overhead.
+
+**Skill consolidation map:**
+
+- **midnight-concepts**: Absorbed core-concepts (architecture, privacy, ZK proofs, Kachina, DUST, glossary). Now 7 references total.
+- **midnight-compact**: Absorbed compact-core (language, types, ZK patterns), compact-examples (token contracts, tutorials), compact-cli-dev (compiler, editor setup). Now 17 references total.
+- **midnight-api**: Absorbed midnight-verify (verification methods), midnight-cq (quality pipeline), midnight-status-codes (error catalog), midnight-plugin-utils (infrastructure). Now 17 references total.
+- **midnight-network**: Absorbed midnight-node (architecture, setup, validator), midnight-indexer (API, operations), proof-server (API, operations), midnight-tooling (local devnet, diagnostics). Now 12 references total.
+- **midnight-dapp-dev**: Absorbed react-wallet-connector (connector API), payment-dapp (dust-free flow). Now 5 references total.
+- **midnight-expert**: Absorbed midnight-fact-check (pipeline). Now 2 references total.
+- **midnight-wallet**: Unchanged (3 references).
+
+### Added
+
+- Cross reference sections in all 7 SKILL.md files linking every skill to its 6 companion skills
+- Payment DApp dust-free flow reference with 1AM wallet integration patterns
+- React wallet connector API reference with DApp Connector v4.0.1 types
+- All 7 skills now include inline reference listings for deep navigation
+
+### Fixed
+
+- STRUCTURE.md removed from .gitignore so it is properly tracked
+- All cross references validated and consistent across skills
+
 ## [3.0.0] - 2026-06-27
 
 ### Added
 
-**16 new specialized skills matching the MIDNIGHT EXPERT plugin architecture:**
-
-- **core-concepts**: Educational foundation covering architecture, privacy patterns, cryptographic protocols, and zero-knowledge proofs (7 reference files)
-- **compact-core**: Full Compact smart contract development lifecycle (8 reference files)
-- **compact-examples**: Curated reference contracts with OpenZeppelin style tokens, NFTs, access control, and pausable patterns (2 reference files plus 4 contract templates)
-- **compact-cli-dev**: CLI scaffolding with Oclif based patterns for contract deployment, wallet management, and devnet control (2 reference files)
-- **midnight-dapp-dev**: DApp frontend scaffolding with Vite plus React 19 plus shadcn templates, wallet integration, and provider architecture (3 reference files)
-- **midnight-wallet**: Wallet SDK reference covering test wallet management patterns, SDK regression checking, shielded and unshielded operations, DUST generation, and MCP integration (3 reference files)
-- **midnight-fact-check**: Fact checking pipeline for extracting claims from docs, classifying by domain, verifying accuracy, and generating reports
-- **midnight-node**: Node reference covering Substrate based architecture, runtime pallets, RPC interface, configuration, operations, and governance (3 reference files)
-- **midnight-indexer**: Indexer reference with GraphQL API v4 documentation, data model, and operational guidance (2 reference files)
-- **proof-server**: Proof server reference covering internal architecture, API reference, configuration tuning, and operational monitoring (2 reference files)
-- **midnight-tooling**: Development environment management covering CLI installation, local devnet via Docker, diagnostics, and status bar (2 reference files)
-- **midnight-expert**: Meta plugin for ecosystem diagnostics with health checks across all installed plugins and version compatibility matrix (1 reference file)
-- **midnight-verify**: Multi method verification framework supporting compile verification, execution verification, type checking, source inspection, and end to end testing (1 reference file)
-- **midnight-cq**: Code quality enforcement with Biome linting, Vitest testing, Playwright E2E, and CI pipelines (1 reference file)
-- **midnight-status-codes**: Error code catalog for lookup across node, ledger, indexer, wallet, SDK, and proof server (1 reference file)
-- **midnight-plugin-utils**: Infrastructure utilities for dependency checking, plugin scanning, and root resolution
+MIDNIGHT EXPERT release with 16 new specialized skills (now consolidated into 7 in v3.1.0).
 
 ### Content Updates
 
-- All SKILL.md files updated with latest Midnight API versions: compact-runtime v0.16.0, dapp-connector-api v4.0.1, ledger v8.0.3, midnight-js v4.0.4, zswap v4.0.0-rc, testkit-js v4.0.4, onchain-runtime v3.0.0
-- Added comprehensive tutorial contract references from official Midnight docs: Battleship, Bulletin Board, ZK Loan, Leaderboard, Private Party
-- Added DUST architecture documentation covering dual component tokenomics
-- Added Kachina protocol deep dive with UC security model
-- Added full GraphQL API v4 reference for indexer queries, mutations, and subscriptions
-- Added proof server deployment and operations guides
-- Added wallet CLI and MCP integration patterns
-
-### Structure
-
-- 20 total skills: 16 specialized MIDNIGHT EXPERT plugins plus 4 preserved consolidated references
-- 37 new reference files across all new skills
-- Package version bumped to 3.0.0
-- Updated README with MIDNIGHT EXPERT style landing page format
-- Updated STRUCTURE.md for 20 skill architecture
-
-### Preserved
-
-- All 4 existing consolidated skills (midnight-concepts, midnight-compact, midnight-api, midnight-network) kept as cross referenced overview skills
-- All existing reference files, scripts, and assets preserved
+- All SKILL.md files updated with Midnight API versions through June 2026
+- Docker image versions: node v0.24.0, indexer v4.3.3
+- Wallet SDK v3.0.0 references and error codes
 
 ## [2.0.2] - 2026-04-29
 
 ### Added
-- GitHub Actions CI workflow: JSON validation, Python linting (pyflakes), skill structure checks
+- GitHub Actions CI workflow
 - Issue templates for bug reports and feature requests
-- Expanded GitHub topics for discoverability (`zero-knowledge`, `blockchain`, `cardano`, `agent-skills`, `midnight-network`, `privacy`)
-- Repository description set on GitHub
+- Expanded GitHub topics
 
 ## [2.0.1] - 2026-04-28
 
-### Fixed - Official Link Updates
-
-- **Network endpoints**: Updated to official `relnotes/network.md` (Preprod RPC: `https://rpc.preprod.midnight.network`)
-- **Validator link**: Fixed 404 - now points to `nodes/full-node` and `nodes/rpc-node`
-- **GitHub repo links**: Fixed hyphens to underscores (`midnight_agent_skills`)
-- **Preview**: Added as discontinued (along with Testnet-02)
+### Fixed
+- Official link updates, network endpoints correction
 
 ## [2.0.0] - 2026-04-28
 
-### Added - April 2026 Updates
-
-New content from midnightntwrk organization GitHub:
-
-- **setup-compact-action**: GitHub Action for CI/CD Compact compilation
-- **midnight-dust-generator**: Programmatic DUST generation for Preprod network
-- **midnight-improvement-proposals**: MIPs governance process
-- **Preprod**: Testnet (testnet-02) is discontinued - use Preprod
-- **midnight-improvement-proposals**: MIPs governance process
-
-### Updated - Comprehensive Rewrite
-
-All skills have been updated with the latest documentation from:
-
-- **Official Docs**: [docs.midnight.network/llms.txt](https://docs.midnight.network/llms.txt)
-- **midnight-docs repo**: [github.com/midnightntwrk/midnight-docs](https://github.com/midnightntwrk/midnight-docs)
-- **midnight-awesome-dapps**: [github.com/midnightntwrk/midnight-awesome-dapps](https://github.com/midnightntwrk/midnight-awesome-dapps)
-
-#### midnight-compact
-- Updated to v0.20+ syntax
-- Added comprehensive syntax reference
-- Added OpenZeppelin contract references (FungibleToken, MultiToken, NonFungibleToken)
-- Added real-world DApp references
-- Added developer tools from awesome-dapps
-
-#### midnight-api
-- Updated to v8.0+ APIs (Midnight.js v4.x, Ledger v8.0.3, DApp Connector v4.0.1)
-- Added SDK references (Midday SDK, midnight-wallet-cli)
-- Added wallet integration patterns
-- Added full code examples
-
-#### midnight-concepts
-- Added real-world use cases from midnight-awesome-dapps
-- Added Finance/DeFi examples (LunarSwap, Hydra Stake, Statera)
-- Added Identity examples (Midnames, Cloak, KYC)
-- Added Gaming examples (Starship, Seabattle)
-- Added comprehensive glossary
-
-#### midnight-network
-- Added local dev tools (midnight-local-dev, playground)
-- Added infrastructure tools (MNN Helm, NightGate)
-- Added block explorers (Midnight Explorer, Midnightscan)
-- Updated Docker configurations
-
-### Added Content
-- 30+ new real-world DApp references
-- 20+ new developer tool references
-- Full code examples for all APIs
-- Network configuration details
-
-### Skills Structure
-- **midnight-compact**: 1 reference file, comprehensive SKILL.md
-- **midnight-api**: 1 reference file, comprehensive SKILL.md
-- **midnight-concepts**: 1 reference file, comprehensive SKILL.md
-- **midnight-network**: 1 reference file, comprehensive SKILL.md
+### Added
+- April 2026 comprehensive update from official docs
+- 30+ new DApp references, 20+ new tool references
+- OpenZeppelin contract references, DUST generator, MIPs governance
 
 ## [1.0.0] - 2026-02-22
 
-### Added - Initial Release
-
-#### midnight-concepts (7 references)
-- Architecture overview
-- Zero-knowledge proofs fundamentals
-- Privacy mechanisms (Zswap, selective disclosure)
-- Kachina protocol documentation
-- UTXO/Account hybrid ledger model
-- Real-world use cases
-- Comprehensive glossary (100+ terms)
-
-#### midnight-compact (10 references)
-- **Quick start guide** - 10-minute tutorial
-- **TypeScript interop** - Complete type mappings
-- Language basics and syntax
-- Type system documentation
-- Ledger operations (7 state types)
-- ZK circuit patterns
-- Standard library reference
-- Contract examples
-- Best practices with common mistakes
-- Contract deployment guide
-
-#### midnight-api (13 references)
-- **Authentication patterns** - Wallet-based auth
-- DApp Connector API reference
-- Compact Runtime API reference
-- ZSwap API reference
-- Wallet API reference
-- Ledger API reference
-- Integration patterns
-- Error codes catalog (30+ codes)
-- Contract deployment guide
-- Testing guide (unit, integration, E2E)
-- API examples (10 complete examples)
-- Address formats (Bech32m)
-- Network configuration
-
-#### midnight-network (7 references)
-- **Node architecture** - Node types and deployment
-- **Docker deployment** - Production configurations
-- Validator guide
-- Indexer setup (v3.0.0)
-- Monitoring and troubleshooting
-- Network configuration
-- Node releases
-
-### Documentation
-- 55 markdown files
-- 21,000+ lines of documentation
-- 150+ code examples
-- 70% coverage of official docs
-
-### Testing
-- Comprehensive validation suite
-- Skills.sh compatibility verified
-- All cross-references validated
-- Structure tests passing
-
-## [Unreleased]
-
-### Planned
-- Debugging guide for Compact contracts
-- State management patterns for DApps
-- Migration guide for version upgrades
-- Security hardening checklist
-- Backup and recovery procedures
-- FAQ section
-- Video tutorial references
+### Added
+- Initial release with 4 skills and 37 references
 
 ---
 
 ## Version History
 
-- **3.0.0** (2026-06-27) - MIDNIGHT EXPERT: 20 skills (16 plugins + 4 consolidated)
-- **2.0.2** (2026-04-29) - CI workflow, issue templates, expanded topics
-- **2.0.1** (2026-04-28) - Official link updates, network endpoints
-- **2.0.0** (2026-04-28) - April 2026 comprehensive update from official docs
-- **1.0.0** (2026-02-22) - Initial release with 4 skills and 37 references
+- **3.1.0** (2026-06-27) - Consolidated to 7 modular skills, 63 references, full cross references
+- **3.0.0** (2026-06-27) - MIDNIGHT EXPERT: 20 skills, 72 references
+- **2.0.2** (2026-04-29) - CI workflow, issue templates
+- **2.0.1** (2026-04-28) - Official link updates
+- **2.0.0** (2026-04-28) - April 2026 comprehensive update
+- **1.0.0** (2026-02-22) - Initial release

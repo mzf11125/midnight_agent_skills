@@ -2,426 +2,199 @@
 
 ## Overview
 
-Compact is **strongly statically typed** with a rich type system designed for zero-knowledge circuits. Every expression has a static type, and the compiler rejects programs that don't type check.
+Compact's type system is designed for ZK circuit programming. Types represent values in a finite field (the scalar field of the proving curve), and operations on those values translate to circuit constraints. The type system is static and checked entirely at compile time with no runtime type errors possible.
 
 ## Primitive Types
 
+### Uint
+
+`Uint<N>` represents an unsigned integer of N bits where N must be a power of two between 8 and 256. The most common sizes are `Uint<64>` and `Uint<128>`.
+
+```
+let small: Uint<8> = 255;
+let medium: Uint<64> = 1_000_000;
+let large: Uint<256> = 0;
+```
+
+Arithmetic on Uint values wraps according to modular arithmetic in the circuit field, but the compiler enforces range checks to ensure values stay within their bit width. Overflow beyond the bit width is a constraint violation and will cause proof generation to fail.
+
 ### Boolean
-```compact
-const flag: Boolean = true;
-const check: Boolean = false;
-```
-- **Values**: `true`, `false`
-- **Default**: `false`
-- **TypeScript**: `boolean`
 
-### Unsigned Integers
+`Boolean` represents a truth value. It can be `true` or `false`. Boolean values are represented as field elements (1 for true, 0 for false) in the circuit.
 
-#### Bounded Integers
-```compact
-const age: Uint<0..150> = 25;        // 0 to 150
-const percentage: Uint<0..100> = 75; // 0 to 100
 ```
-- **Syntax**: `Uint<m..n>` where `m` is lower bound (currently must be 0), `n` is upper bound
-- **Default**: `0`
-- **TypeScript**: `bigint` with runtime bounds checks
+let flag: Boolean = true;
+let result: Boolean = x > y;
+```
 
-#### Sized Integers
-```compact
-const value: Uint<32> = 4294967295;  // 32-bit (0 to 2^32-1)
-const small: Uint<8> = 255;          // 8-bit (0 to 255)
-```
-- **Syntax**: `Uint<n>` where `n` is number of bits
-- **Equivalent**: `Uint<32>` = `Uint<0..4294967295>` (2^32-1)
-- **Common sizes**: 8, 16, 32, 64, 128, 256
-- **Default**: `0`
-
-### Field
-```compact
-const element: Field = 12345;
-```
-- **Purpose**: Scalar field elements for ZK circuits
-- **Range**: 0 to maximum field value (very large prime)
-- **Default**: `0`
-- **TypeScript**: `bigint` with runtime bounds checks
-- **Note**: Arithmetic wraps modulo field size
-
-### Tuples
-```compact
-const pair: [Field, Boolean] = [42, true];
-const triple: [Uint<8>, Uint<16>, Uint<32>] = [1, 2, 3];
-const empty: [] = [];  // Unit type
-```
-- **Syntax**: `[T1, T2, ...]` where each `T` is a type
-- **Heterogeneous**: Elements can have different types
-- **Length**: Fixed at compile time
-- **Default**: Tuple of default values for each element
-- **TypeScript**: `[T1, T2, ...]` or `T[]` with length checks
-
-### Vectors
-```compact
-const vec: Vector<5, Field> = [1, 2, 3, 4, 5];
-```
-- **Syntax**: `Vector<n, T>` where `n` is length, `T` is element type
-- **Shorthand**: `Vector<5, Field>` = `[Field, Field, Field, Field, Field]`
-- **Homogeneous**: All elements same type
-- **Default**: Vector of default values
-- **TypeScript**: `T[]` with runtime length checks
+Boolean operations include `&&` (logical AND), `||` (logical OR), and `!` (logical NOT). Short-circuit evaluation does not apply in circuit functions because both branches of a conditional are always evaluated.
 
 ### Bytes
-```compact
-const hash: Bytes<32> = "midnight";  // UTF-8 encoded, padded to 32
-const data: Bytes<64> = pad(64, "hello");
+
+`Bytes<N>` represents a fixed-length sequence of N bytes. It is the type used for addresses, hashes, and arbitrary binary data.
+
 ```
-- **Syntax**: `Bytes<n>` where `n` is length in bytes
-- **Purpose**: Byte arrays for hashing, cryptography
-- **String literals**: Automatically UTF-8 encoded
-- **Default**: All zero bytes
-- **TypeScript**: `Uint8Array` with length checks
-
-### Opaque Types
-```compact
-const text: Opaque<"string"> = "hello";
-const buffer: Opaque<"Uint8Array"> = new Uint8Array([1, 2, 3]);
+let hash: Bytes<32> = zero();
+let address: Bytes<32> = 0x1234...;
+let data: Bytes<64> = pack(input);
 ```
-- **Syntax**: `Opaque<"tag">` where tag is `"string"` or `"Uint8Array"`
-- **Purpose**: Values manipulated in witnesses but opaque to circuits
-- **In circuits**: Represented as hash
-- **Default**: Empty string or zero-length array
-- **TypeScript**: `string` or `Uint8Array`
 
-## User-Defined Types
+Bytes values can be compared for equality, hashed, and used as inputs to cryptographic functions. Individual bytes cannot be accessed directly. Operations on Bytes values work on the entire value at once.
 
-### Structures
-```compact
-struct Point {
-  x: Field,
-  y: Field
+### Field
+
+`Field` represents an element of the scalar field of the proving curve. This is the most fundamental type in the circuit because every wire carries a field element. Field values are raw field elements without any range constraints or interpretation.
+
+```
+let element: Field = 0;
+let result: Field = mulField(a, b);
+```
+
+Field is rarely used directly in application code. Most application values have semantic meaning (amounts, addresses) that are better captured by Uint or Bytes types. Field is used in cryptographic operations and low-level circuit construction.
+
+### CurvePoint
+
+`CurvePoint` represents a point on the elliptic curve used by the proving system. It is used in signature verification and other curve operations.
+
+```
+let pk: CurvePoint = ...
+let sig_valid: Boolean = verifySignature(pk, msg, sig);
+```
+
+CurvePoint values are pairs of field elements satisfying the curve equation. The compiler validates that values assigned to CurvePoint variables represent valid curve points.
+
+## Collection Types
+
+### Vector
+
+`Vector<T, N>` is a fixed-size ordered collection of elements of type T. The size N must be a compile-time constant.
+
+```
+let values: Vector<Uint<64>, 10> = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+let first: Uint<64> = values[0];
+```
+
+Vector elements are accessed by index using square bracket notation. The index must be a compile-time constant or a value that the compiler can determine at compile time. Dynamic indexing (where the index depends on a witness value) is not supported because circuits have a fixed structure.
+
+### Map
+
+`Map<K, V>` is an associative collection mapping keys of type K to values of type V. Maps are implemented as key-value pairs with lookup constraints.
+
+```
+let balances: Map<Bytes<32>, Uint<128>> = empty();
+let alice_balance: Uint<128> = balances[alice_address];
+```
+
+Map lookups in circuit functions add constraints that verify the returned value corresponds to the key. The map must contain an entry for every key that is accessed. Accessing a missing key is a constraint violation.
+
+### Set
+
+`Set<T>` represents a collection of unique elements of type T. Sets support membership testing and insertion.
+
+```
+let whitelist: Set<Bytes<32>> = empty();
+let is_member: Boolean = whitelist.contains(address);
+```
+
+Set membership tests add constraints to the circuit. The set does not need to contain every possible element. Testing membership of an absent element simply returns false rather than causing a constraint violation.
+
+### Cell
+
+`Cell<T>` is a mutable container for a single value of type T. It provides a way to model mutable state within the circuit.
+
+```
+let counter: Cell<Uint<64>> = cell(0);
+counter = counter + 1;
+```
+
+Cell is primarily used in ledger state operations where values need to be read, modified, and written back. The Cell pattern ensures that state transitions are properly constrained.
+
+## Opaque Types
+
+Opaque types hide their internal representation. They are declared with the `opaque` keyword and have no visible structure to code outside their defining module.
+
+```
+opaque Signature;
+opaque Nullifier;
+```
+
+Operations on opaque types are limited to the functions defined in the type's module. This encapsulation ensures that values like signatures and nullifiers cannot be constructed or manipulated except through the approved interfaces, preventing subtle security bugs.
+
+## Structs
+
+Structs group related values into a single type. They are declared with the `struct` keyword and contain named fields with explicit types.
+
+```
+struct Transfer {
+    amount: Uint<64>,
+    sender: Bytes<32>,
+    recipient: Bytes<32>,
 }
+```
 
-struct Person {
-  name: Bytes<32>;
-  age: Uint<0..150>;
-  active: Boolean;
+Struct fields are accessed with dot notation. Struct values are created using struct literal syntax.
+
+```
+let t = Transfer { amount: 100, sender: alice, recipient: bob };
+let amt: Uint<64> = t.amount;
+```
+
+Structs can contain any type including other structs, creating nested data structures. Structs are value types and are copied on assignment.
+
+## Enums
+
+Enums represent a value that can be one of several variants. Each variant can carry associated data.
+
+```
+enum Recipient {
+    Address(Bytes<32>),
+    Contract(Bytes<32>, Bytes<32>),
 }
 ```
-- **Syntax**: `struct Name { field: Type, ... }`
-- **Separators**: Comma or semicolon (consistent within struct)
-- **Default**: All fields set to their default values
-- **TypeScript**: `{ field: Type, ... }`
 
-#### Generic Structures
-```compact
-struct Pair<T> {
-  first: T,
-  second: T
-}
+Enum values are created by naming the variant and providing the associated data. Pattern matching on enums uses `match` expressions.
 
-struct Container<#n, T> {
-  items: Vector<n, T>,
-  count: Uint<0..n>
+```
+match recipient {
+    Address(addr) => transfer_to_address(addr),
+    Contract(addr, method) => call_contract(addr, method),
 }
 ```
-- **Type parameters**: `<T>` for types
-- **Size parameters**: `<#n>` for compile-time numbers
-- **Specialization**: `Pair<Field>`, `Container<10, Uint<32>>`
-- **Must be fully specialized**: All parameters provided
 
-### Enumerations
-```compact
-enum Status {
-  pending,
-  approved,
-  rejected
-}
-
-enum Color { red, green, blue }
-```
-- **Syntax**: `enum Name { value1, value2, ... }`
-- **Values**: `Status.pending`, `Status.approved`, etc.
-- **Default**: First value in declaration
-- **TypeScript**: `number` with runtime membership checks
-
-## Subtyping
-
-### Subtyping Rules
-
-```compact
-// Uint subtyping
-Uint<0..10> <: Uint<0..100>  // ✅ Smaller range is subtype
-Uint<0..100> <: Field         // ✅ All Uints are subtypes of Field
-
-// Tuple subtyping (covariant)
-[Uint<0..10>, Boolean] <: [Uint<0..100>, Boolean]  // ✅ Element-wise
-
-// Reflexive
-T <: T  // ✅ Every type is subtype of itself
-```
-
-### Implicit Conversions
-```compact
-const small: Uint<0..10> = 5;
-const large: Uint<0..100> = small;  // ✅ Implicit upcast
-
-const num: Uint<0..1000> = 42;
-const field: Field = num;  // ✅ Implicit conversion to Field
-```
-
-### Least Upper Bound
-```compact
-// For tuples/vectors with mixed types
-const mixed = [1, 2, 3];  // Type: [Uint<0..1>, Uint<0..2>, Uint<0..3>]
-// Least upper bound: Uint<0..3>
-// Can be used as: Vector<3, Uint<0..3>>
-```
-
-## Type Annotations
-
-### Required Annotations
-```compact
-// Circuit parameters: REQUIRED
-circuit process(x: Field, y: Boolean): Uint<32> { ... }
-
-// Witness parameters: REQUIRED
-witness getData(id: Uint<64>): Bytes<32>;
-```
-
-### Optional Annotations
-```compact
-// Const bindings: OPTIONAL
-const x = 42;              // Inferred: Uint<0..42>
-const y: Field = 42;       // Explicit: Field
-
-// Anonymous circuits: OPTIONAL
-const f = (x, y) => x + y;           // Inferred
-const g = (x: Field, y: Field): Field => x + y;  // Explicit
-```
-
-## Default Values
-
-Every type has a default value:
-
-```compact
-default<Boolean>           // false
-default<Uint<0..100>>      // 0
-default<Field>             // 0
-default<[Field, Boolean]>  // [0, false]
-default<Bytes<32>>         // 32 zero bytes
-default<Opaque<"string">>  // ""
-default<Point>             // Point { x: 0, y: 0 }
-default<Status>            // Status.pending (first value)
-```
+The match expression must be exhaustive, covering all variants of the enum. The compiler checks this at compile time.
 
 ## Type Conversions
 
-### Allowed Casts
+Compact supports explicit type conversions between compatible types. Implicit conversions are not allowed.
 
-```compact
-// Upcasts (always safe)
-const small: Uint<0..10> = 5;
-const large = small as Uint<0..100>;  // ✅ Static cast
-
-// Field conversions
-const num: Uint<32> = 42;
-const field = num as Field;  // ✅ Static cast
-
-// Boolean conversions
-const zero: Field = 0;
-const flag = zero as Boolean;  // ✅ 0→false, others→true
-
-// Checked downcasts
-const big: Uint<0..1000> = 42;
-const small = big as Uint<0..100>;  // ✅ Runtime check
-
-// Bytes to Field
-const bytes: Bytes<32> = "data";
-const field = bytes as Field;  // ✅ Interpret as field element
+```
+let small: Uint<8> = 10;
+let medium: Uint<64> = small as Uint<64>;
 ```
 
-### Conversion Table
+Conversions between Uint types of different widths are supported. The compiler adds range checks where necessary. Conversions from larger to smaller widths require the value to fit within the target width and will fail if it does not.
 
-| From | To | Type | Notes |
-|------|-----|------|-------|
-| `Uint<0..m>` | `Uint<0..n>` (m≤n) | Static | Safe upcast |
-| `Uint<0..m>` | `Uint<0..n>` (m>n) | Checked | Runtime validation |
-| `Uint<0..n>` | `Field` | Static | Always safe |
-| `Field` | `Uint<0..n>` | Checked | Validates range |
-| `Field` | `Boolean` | Conversion | 0→false, else→true |
-| `Field` | `Bytes<n>` | Checked | Validates fits in n bytes |
-| `Boolean` | `Uint<0..n>` | Conversion | false→0, true→1 |
-| `Boolean` | `Field` | Conversion | false→0, true→1 |
-| `Bytes<m>` | `Bytes<n>` (m=n) | Static | Same length |
-| `Bytes<m>` | `Field` | Checked | Validates field range |
-| `enum` | `Field` | Conversion | Enum value to number |
+Conversions between Bytes and other types require explicit packing and unpacking functions. There is no direct cast between Bytes and Uint. Use the standard library functions `pack` and `unpack` for these conversions.
 
-## TypeScript Mappings
+## CompactType in TypeScript
 
-### Primitive Types
+The Compact compiler generates TypeScript type definitions for each Compact type. These definitions, called CompactType classes, enable type-safe interaction with contract state from TypeScript code.
+
+### Generated Classes
+
+For each struct and enum in the Compact source, the compiler generates a corresponding TypeScript class. The class includes methods for serializing values to the wire format expected by the contract and for deserializing values received from the contract.
+
 ```typescript
-// Compact → TypeScript
-Boolean          → boolean
-Field            → bigint
-Uint<n>          → bigint
-Bytes<n>         → Uint8Array
-Opaque<"string"> → string
-Opaque<"Uint8Array"> → Uint8Array
-```
+// Generated from compact struct Transfer
+class Transfer extends CompactType {
+    amount: bigint;
+    sender: Uint8Array;
+    recipient: Uint8Array;
 
-### Compound Types
-```typescript
-// Tuples
-[Field, Boolean] → [bigint, boolean] or Array<bigint | boolean>
-
-// Vectors
-Vector<5, Field> → bigint[] (with length check)
-
-// Structs
-struct Point { x: Field, y: Field }
-→ { x: bigint, y: bigint }
-
-// Enums
-enum Status { pending, approved }
-→ number (0 for pending, 1 for approved)
-```
-
-### Runtime Type Constructors
-```typescript
-import { CompactTypeBoolean, CompactTypeField, CompactTypeUnsignedInteger } from '@midnight-ntwrk/compact-runtime';
-
-const boolType = new CompactTypeBoolean();
-const fieldType = new CompactTypeField();
-const uint32Type = new CompactTypeUnsignedInteger(4294967295, 4);
-const bytesType = new CompactTypeBytes(32);
-const vectorType = new CompactTypeVector(5, fieldType);
-```
-
-## Generic Types
-
-### Generic Structures
-```compact
-struct Box<T> {
-  value: T
-}
-
-// Specialization
-const intBox: Box<Uint<32>> = Box { value: 42 };
-const fieldBox: Box<Field> = Box { value: 100 };
-```
-
-### Generic Circuits
-```compact
-circuit identity<T>(x: T): T {
-  return x;
-}
-
-// Usage (type inferred)
-const result = identity(42);  // T = Uint<0..42>
-```
-
-### Size Parameters
-```compact
-struct FixedArray<#n, T> {
-  data: Vector<n, T>
-}
-
-// Specialization
-const arr: FixedArray<10, Field> = FixedArray {
-  data: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-};
-```
-
-## Type Inference
-
-### Automatic Inference
-```compact
-// Literals
-const x = 42;           // Uint<0..42>
-const y = true;         // Boolean
-const z = "hello";      // Bytes<5>
-
-// Expressions
-const sum = x + y;      // Inferred from operands
-const result = f(x);    // Inferred from f's return type
-```
-
-### Inference Limitations
-```compact
-// ❌ Cannot infer circuit parameter types
-circuit process(x) { ... }  // ERROR: type annotation required
-
-// ✅ Must annotate
-circuit process(x: Field) { ... }
-```
-
-## Common Patterns
-
-### Option Type (Maybe)
-```compact
-import { Maybe, some, none } from CompactStandardLibrary;
-
-const value: Maybe<Field> = some(42);
-const empty: Maybe<Field> = none();
-```
-
-### Result Type (Either)
-```compact
-import { Either, left, right } from CompactStandardLibrary;
-
-const success: Either<String, Uint<32>> = right(42);
-const error: Either<String, Uint<32>> = left("Error message");
-```
-
-### Newtype Pattern
-```compact
-struct UserId { value: Uint<64> }
-struct OrderId { value: Uint<64> }
-
-// Type-safe: can't mix UserId and OrderId
-const user = UserId { value: 123 };
-const order = OrderId { value: 456 };
-```
-
-## Best Practices
-
-### 1. Use Specific Types
-```compact
-// ❌ Too general
-const value: Field = 42;
-
-// ✅ Specific bounds
-const age: Uint<0..150> = 42;
-```
-
-### 2. Leverage Subtyping
-```compact
-// ✅ Accept supertypes in parameters
-circuit process(value: Uint<0..1000>): [] {
-  // Accepts Uint<0..100>, Uint<0..500>, etc.
+    static create(amount: bigint, sender: Uint8Array, recipient: Uint8Array): Transfer;
+    static schema(): CompactTypeSchema;
 }
 ```
 
-### 3. Use Generics for Reusability
-```compact
-// ✅ Generic container
-struct Container<T> {
-  items: Vector<10, T>
-}
-
-// Works with any type
-const numbers: Container<Uint<32>> = ...;
-const flags: Container<Boolean> = ...;
-```
-
-### 4. Explicit Annotations for Clarity
-```compact
-// ✅ Clear intent
-const hash: Bytes<32> = persistentHash(data);
-const commitment: Field = transientCommit(value, randomness);
-```
-
-## Resources
-
-- **Language Reference**: See midnight-compact skill
-- **Standard Library Types**: See standard-library.md
-- **TypeScript Interop**: See typescript-interop.md
-- **Type Conversions**: See type-conversions.md
+### Using CompactType Classes
+CompactType classes handle argument construction and return value inspection for contract calls. A value with an incorrect field type produces a compile-time error rather than a runtime contract failure.

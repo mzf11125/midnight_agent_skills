@@ -705,6 +705,17 @@ Outputs: `compact-version`, `cache-hit`
 - [Compact By Example](https://github.com/Olanetsoft/compact-by-example)
 - [Midnight MCP](https://github.com/Olanetsoft/midnight-mcp) - AI assistant integration
 
+## Cross Reference Skills
+
+This skill covers Compact language and contracts. For supporting areas see these related skills.
+
+- **midnight-concepts** — Zero knowledge architecture, Kachina, privacy mechanisms
+- **midnight-api** — SDK integration, deployment APIs, verification, code quality
+- **midnight-network** — Local devnet, compiler tooling, Docker setup
+- **midnight-wallet** — Wallet SDK, DUST, key management for contract testing
+- **midnight-dapp-dev** — Frontend scaffolding, wallet connect UI, React patterns
+- **midnight-expert** — Health checks, version matrix, contract verification
+
 ### Troubleshooting
 - Compilation errors: Check language version pragma
 - Type errors: Verify type annotations

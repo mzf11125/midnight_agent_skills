@@ -1,5 +1,0 @@
-{
-  "name": "core-concepts",
-  "description": "Educational foundation for Midnight Network. Architecture, privacy patterns, cryptographic protocols, and zero-knowledge proofs.",
-  "tags": ["midnight", "zero-knowledge", "blockchain", "privacy", "concepts", "architecture", "kachina", "zswap"]
-}

@@ -467,6 +467,17 @@ Reference: [MIP-1: MIP Process](https://github.com/midnightntwrk/midnight-improv
 
 - [Midnight Network Discord](https://discord.com/invite/midnightnetwork)
 
+## Cross Reference Skills
+
+This skill provides foundational concepts. For practical development see these related skills.
+
+- **midnight-compact** — Write, compile, and deploy smart contracts in Compact
+- **midnight-api** — Integrate Midnight APIs for DApp development
+- **midnight-network** — Run nodes, validators, indexers, and proof servers
+- **midnight-wallet** — Manage wallets, DUST operations, and MCP integration
+- **midnight-dapp-dev** — Scaffold frontend DApps with React and Vite
+- **midnight-expert** — Ecosystem health checks and version compatibility
+
 ### Social
 
 - [X/Twitter](https://x.com/MidnightNtwrk)

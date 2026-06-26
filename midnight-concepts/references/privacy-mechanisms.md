@@ -1,264 +1,107 @@
-# Privacy Mechanisms in Midnight
+# Privacy Mechanisms
 
 ## Overview
 
-Midnight provides multiple privacy mechanisms that work together to enable confidential blockchain applications while maintaining verifiability.
+Midnight provides privacy at the protocol level through a combination of cryptographic commitments, zero-knowledge proofs, and a shielded transaction protocol called Zswap. These mechanisms ensure that transaction details remain confidential while preserving the ability of validators to verify correctness and prevent double spending.
 
-## Zswap Protocol
+## Zswap Shielded Transactions
 
-### What is Zswap?
-
-Zswap is Midnight's privacy-preserving token system that hides:
-- Transaction amounts
-- Sender and receiver identities
-- Token types being transferred
+Zswap is Midnight's protocol for confidential value transfers. It hides three critical pieces of information in every shielded transaction: the amount being transferred, the identity of the sender, and the identity of the recipient. Only the parties involved in the transaction can see these details.
 
 ### How Zswap Works
 
-**Traditional Blockchain Transaction**:
-```
-Alice sends 100 tokens to Bob
-[Publicly visible: sender=Alice, receiver=Bob, amount=100]
-```
+A shielded transaction consumes existing coin commitments and creates new ones. Each coin commitment is a cryptographic hash that binds a coin's value and owner without revealing either. When a coin is spent, the spender reveals a nullifier (a unique identifier derived from the coin) that proves the coin existed and has not been spent before. The nullifier does not reveal which coin it corresponds to, so an observer cannot link the spend to any particular coin commitment.
 
-**Zswap Transaction**:
-```
-Someone sent some amount of some token to someone
-[Publicly visible: cryptographic commitments proving validity]
-[Private: actual sender, receiver, amount, token type]
-```
+The transaction includes a zero-knowledge proof that attests to several facts: the spender knows the secret key corresponding to the nullifier, the sum of input coin values equals the sum of output coin values (enforcing conservation of value), and each output coin commitment is correctly formed. Validators verify this proof without learning any of the private values.
 
-### Key Components
+### Multi-Party Transactions
 
-#### Coin Commitments
-Zswap represents tokens as cryptographic commitments:
-- Commitment hides the coin's value, type, and owner
-- Commitment can be proven to be valid without revealing details
-- Commitments are stored in a Merkle tree on-chain
+Zswap supports transactions involving multiple senders and multiple recipients within a single proof. This enables complex transfer patterns such as splitting a large coin into several smaller ones, combining multiple coins into one, or routing value through intermediate parties. The proof enforces conservation of value across all inputs and outputs simultaneously.
 
-#### Nullifiers
-When spending a coin:
-- Generate a unique nullifier for that coin
-- Nullifier prevents double-spending
-- Nullifier doesn't reveal which coin was spent
+## Selective Disclosure Pattern
 
-#### Zero-Knowledge Proofs
-Each Zswap transaction includes proofs that:
-- Inputs are valid unspent coins
-- Outputs are properly formed
-- Transaction balances (inputs = outputs)
-- Sender has authority to spend inputs
+Selective disclosure is a design pattern that allows users to reveal specific facts about their private data while keeping everything else hidden. Rather than an all-or-nothing choice between full privacy and full transparency, selective disclosure gives users fine-grained control.
 
-### Transaction Structure
+### How Selective Disclosure Works
 
-A Zswap transaction consists of:
-
-**Guaranteed Phase** (always executes):
-- Fee payments
-- Fast-to-verify operations
-- Always succeeds or transaction is invalid
-
-**Fallible Phase** (may fail atomically):
-- Contract calls
-- Operations that might fail
-- Fails separately from guaranteed phase
-
-### Shielded vs Unshielded
-
-#### Shielded Tokens
-- Fully private (amounts, owners hidden)
-- Use ZK proofs for all operations
-- Maximum privacy
-
-#### Unshielded Tokens
-- Amounts and owners visible
-- Faster operations (no ZK proofs needed)
-- Useful for public operations
-
-#### Conversion
-- Shield: Convert unshielded → shielded (gain privacy)
-- Unshield: Convert shielded → unshielded (lose privacy for transparency)
-
-### Dust Tokens
-Special token type for paying transaction fees:
-- Unshielded by default
-- Used to pay network fees
-- Can be converted to/from other tokens
-
-## Selective Disclosure
-
-### Concept
-Applications choose exactly what information to reveal and what to keep private.
-
-### Granular Control
-- **Fully Private**: No information revealed (e.g., secret ballot voting)
-- **Partially Private**: Some properties revealed (e.g., "transaction > $10,000" without exact amount)
-- **Conditionally Private**: Reveal to specific parties (e.g., auditor access)
-
-### Implementation Patterns
-
-#### Pattern 1: Public Verification, Private Data
-```
-Public: "A valid vote was cast"
-Private: Who voted, what they voted for
-```
-
-#### Pattern 2: Threshold Disclosure
-```
-Public: "Balance exceeds $10,000" (for compliance)
-Private: Exact balance amount
-```
-
-#### Pattern 3: Time-Based Disclosure
-```
-Private during: Auction bidding period
-Public after: Auction ends, winning bid revealed
-```
+In a Compact contract, the circuit defines what information will be disclosed as part of the proof. Any value placed in the disclosure section of the circuit becomes publicly visible when the proof is verified. Everything else remains hidden. The contract author decides at design time which pieces of data are disclosed and which remain private.
 
 ### Use Cases
 
-**Financial Compliance**:
-- Prove transaction is under reporting threshold
-- Don't reveal exact amount
+A compliance application might disclose that a transaction's value falls within a regulatory threshold range without revealing the exact amount. An identity application might disclose that a user is over 18 without revealing their birth date. A voting application might disclose that a vote was cast without revealing which option was chosen.
 
-**Age Verification**:
-- Prove age > 18
-- Don't reveal birthdate
+### Design Considerations
 
-**Credential Verification**:
-- Prove university degree
-- Don't reveal GPA or graduation date
+Disclosure is irreversible. Once data appears in the disclosure section, it is permanently visible on chain. Contract authors must carefully consider what they disclose. The general principle is to disclose only what is strictly necessary for the application to function and for compliance requirements to be met.
 
-## State Channels (Hydra Integration)
+## Communication Commitments
 
-### What are State Channels?
+Communication commitments are the mechanism by which the local component sends private state updates to the replicated component. Rather than sending the actual data (which would compromise privacy), the local component sends a cryptographic commitment that binds to the data without revealing it.
 
-State channels allow groups of users to conduct many transactions off-chain, then settle the final result on-chain.
+The replicated component stores these commitments on chain. Later, when the local component needs to reference that private state, it can open the commitment by providing the original data and proving that it matches the stored commitment. This proof happens within the ZK circuit, so the data itself never appears on chain.
 
-### Benefits
+## Coin Commitments
 
-**Privacy**:
-- Off-chain transactions aren't visible to the network
-- Only opening and closing states are on-chain
-- Intermediate states remain private
+Coin commitments are the building blocks of shielded value on Midnight. A coin commitment is a cryptographic hash computed from three inputs: the coin's value, the owner's public key, and a random salt. The salt prevents an observer from deriving the owner or value by brute-force hashing.
 
-**Performance**:
-- Near-instant transactions
-- No waiting for block confirmation
-- Thousands of transactions per second
+### Creating Coin Commitments
 
-**Cost**:
-- Pay fees only for opening/closing channel
-- Unlimited off-chain transactions
-- Dramatically lower costs
+When value enters the shielded pool, the protocol creates a new coin commitment and adds it to the commitment tree. Coin commitments are stored in a Merkle tree structure that allows efficient membership proofs. A user who knows the value, public key, and salt can prove that their coin commitment exists in the tree without revealing which commitment it is.
 
-### How It Works
+### Spending Coins
 
-1. **Open Channel**: Parties lock funds on-chain
-2. **Transact Off-Chain**: Exchange signed state updates
-3. **Close Channel**: Submit final state on-chain
+To spend a shield coin, the owner must prove two things: they know the preimage of the coin commitment (value, public key, salt), and the coin has not been spent before. The first proof shows ownership. The second proof is accomplished through nullifiers.
 
-### Privacy Implications
+## Nullifiers
 
-**On-Chain Visibility**:
-- Channel opening (parties, initial amounts)
-- Channel closing (final amounts)
+A nullifier is a unique identifier derived from a coin commitment and the owner's secret key. When a coin is spent, its nullifier is revealed on chain. Validators check that the nullifier has not appeared before (preventing double spending). Because the nullifier is derived using a one-way function, it cannot be linked back to the original coin commitment, preserving the spender's privacy.
 
-**Off-Chain Privacy**:
-- All intermediate transactions
-- Transaction patterns
-- Exact timing of transfers
+### Nullifier Derivation
 
-### Use Cases
+The nullifier is computed as the hash of the coin commitment's serial number (a field element unique to each coin) and the owner's secret key. Two different owners spending coins from the same commitment tree entry would produce different nullifiers. The same owner spending the same coin twice would produce the same nullifier both times, which validators detect as a double-spend attempt.
 
-**Gaming**:
-- Fast in-game transactions
-- Private game state
-- Settle final scores on-chain
+### Nullifier Safety
 
-**Micropayments**:
-- Streaming payments
-- Pay-per-use services
-- Low-cost frequent transactions
+Contract authors must ensure that nullifiers are derived correctly. A poorly designed nullifier scheme could allow an attacker to spend the same coin twice or could inadvertently link different spends to the same user. The Compact standard library provides safe nullifier derivation functions that implement the correct pattern.
 
-**Private Exchanges**:
-- Negotiate trades privately
-- Settle final swap on-chain
-- Hide trading strategies
+## Viewing Keys
 
-## Combining Privacy Mechanisms
+Viewing keys enable selective access to transaction details. The owner of a viewing key can decrypt the amounts and counterparties of transactions that involve a particular shielded address. This enables auditing, compliance reporting, and wallet functionality while maintaining privacy against the general public.
 
-### Zswap + Selective Disclosure
-- Use Zswap for private token transfers
-- Selectively reveal properties for compliance
-- Example: Private DeFi with regulatory reporting
+### Outgoing Viewing Keys
 
-### Zswap + State Channels
-- Open state channel with Zswap (private amounts)
-- Conduct private off-chain transactions
-- Close channel with Zswap (private final state)
-- Example: Private gaming with token rewards
+An outgoing viewing key allows the holder to see the details of transactions sent from a particular address. This is useful for wallet software that needs to display the user's sent transaction history.
 
-### All Three Together
-- State channels for performance
-- Zswap for token privacy
-- Selective disclosure for compliance
-- Example: High-frequency private trading with audit trails
+### Incoming Viewing Keys
 
-## Privacy vs Performance Trade-offs
+An incoming viewing key allows the holder to see the details of transactions received at a particular address. This is useful for wallet software that needs to detect and display incoming payments.
 
-### Maximum Privacy
-- Fully shielded Zswap transactions
-- All data private
-- Slower (ZK proof generation)
-- Higher computational cost
+### Key Distribution
 
-### Balanced Approach
-- Mix shielded and unshielded as needed
-- Selective disclosure for necessary transparency
-- State channels for frequent operations
-- Optimal for most applications
+Users can share viewing keys selectively. An individual user might share their incoming viewing key with their accountant for tax purposes but not with anyone else. The protocol does not enforce how viewing keys are distributed. Users control this themselves.
 
-### Performance Priority
-- Unshielded transactions where privacy not needed
-- State channels for high-frequency operations
-- Selective disclosure only when required
-- Faster, lower cost
+## Encryption
 
-## Security Considerations
+Midnight uses encryption to protect the contents of transactions from network observers. When a user submits a shielded transaction, the recipient's portion of the transaction data is encrypted with the recipient's public key. Only the recipient can decrypt this data and learn that they received funds.
 
-### Cryptographic Assumptions
-- Elliptic curve discrete logarithm hardness
-- Collision-resistant hash functions
-- Secure random number generation
+### Payload Encryption
 
-### Privacy Leaks to Avoid
-- **Timing Analysis**: Transaction timing can reveal information
-- **Amount Correlation**: Unique amounts can be tracked
-- **Network Analysis**: IP addresses can reveal identities
+The encrypted payload contains the coin value, the salt used to create the new coin commitment, and any memo data attached to the transaction. Without this information, the recipient cannot spend the received coin because they need the value and salt to construct the proof of ownership.
 
-### Best Practices
-- Use standard denominations to avoid amount correlation
-- Batch transactions to obscure timing
-- Use privacy-preserving network layers (Tor, VPN)
-- Regularly mix shielded and unshielded operations
+The sender encrypts the payload using the recipient's public key and includes the ciphertext in the transaction. Validators store the encrypted payload on chain but cannot decrypt it. The recipient's wallet software monitors the chain for transactions that contain decryptable payloads.
 
-## Development Guidelines
+## Private State Providers
 
-### Choosing Privacy Level
-1. Identify what data must be private
-2. Determine what must be public (compliance, UX)
-3. Use appropriate mechanism for each data type
-4. Test privacy properties thoroughly
+Private state providers are services that store private data off chain and supply it to the local component when needed. They act as a bridge between the user's private data and the on-chain verification system.
 
-### Testing Privacy
-- Verify no unintended information leakage
-- Test with realistic transaction patterns
-- Consider adversarial analysis
-- Use privacy analysis tools
+### How Private State Providers Work
 
-### User Experience
-- Explain privacy trade-offs to users
-- Provide clear privacy indicators
-- Allow user control over disclosure
-- Balance privacy with usability
+When the local component needs private data to construct a witness (for example, the value of a coin the user owns), it queries a private state provider. The provider returns the requested data, which the local component uses to build the witness. The provider never submits data to the chain. It only responds to queries from authorized clients.
+
+### Provider Trust Model
+
+Private state providers must be trusted to store data correctly and respond honestly. If a provider loses data, the user may be unable to spend their coins. If a provider gives incorrect data, the proof generation will fail or produce an invalid proof. The trust is limited to availability and correctness of stored data. The provider cannot steal funds because it does not have access to the user's secret key.
+
+## On-Chain Proofs with Off-Chain Data
+
+The fundamental privacy architecture of Midnight can be summarized as follows: proofs live on chain, data lives off chain. Validators verify cryptographic proofs that attest to the correctness of private computations. The actual private data never appears in any block, never enters any validator's memory, and never gets stored in any on-chain data structure. Observers of the blockchain see only proofs, commitments, and nullifiers. They can verify that every transaction followed the rules, but they cannot see what those transactions actually did.

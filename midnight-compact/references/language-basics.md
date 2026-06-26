@@ -2,390 +2,176 @@
 
 ## Overview
 
-Compact is a statically-typed, functional programming language designed specifically for zero-knowledge smart contracts.
+Compact is the domain-specific language for writing smart contracts on Midnight. It compiles to arithmetic circuits that define the constraints of a zero-knowledge proof. Compact looks familiar to developers who have worked with languages like TypeScript or Rust but differs in important ways due to its purpose as a ZK circuit description language.
 
-## Basic Syntax
+## Module Structure
 
-### Comments
-```compact
-// Single-line comment
-/* Multi-line
-   comment */
+Every Compact file is a module. Modules organize code into named units that can be imported by other modules. A module declaration specifies the module name and optionally a version.
+
+```
+module my_contract;
 ```
 
-### Variables
-```compact
-let x = 42;              // Immutable by default
-let mut y = 10;          // Mutable variable
-y = 20;                  // Reassignment
-```
+The module name must match the filename. A file named `token.compact` must begin with `module token;`. Module names use lowercase letters and underscores.
 
-## Types
-
-### Primitive Types
-```compact
-Bool                     // true, false
-Field                    // Field element (cryptographic)
-Bytes                    // Byte arrays
-String                   // Text strings
-Unit                     // () - no value
-```
-
-### Numeric Types
-```compact
-U8, U16, U32, U64       // Unsigned integers
-I8, I16, I32, I64       // Signed integers
-```
-
-### Compound Types
-```compact
-// Tuples
-let pair: (U32, Bool) = (42, true);
-
-// Arrays
-let arr: [U32; 5] = [1, 2, 3, 4, 5];
-
-// Structs
-struct Point {
-  x: Field,
-  y: Field
-}
-
-// Enums
-enum Option<T> {
-  Some(T),
-  None
-}
-```
+Modules can contain function definitions, type definitions, constant declarations, and import statements. The compiler processes the module from top to bottom, and all declarations are visible throughout the module regardless of their position in the file.
 
 ## Functions
 
-### Basic Functions
-```compact
-fn add(a: U32, b: U32) -> U32 {
-  a + b
-}
-
-// Call function
-let result = add(5, 3);
-```
+Compact has two kinds of functions: circuit functions and witness functions.
 
 ### Circuit Functions
-```compact
-circuit privateAdd(private a: Field, public b: Field) -> Field {
-  a + b  // a is hidden, b is public, result is public
+
+A circuit function defines constraints that the ZK proof must satisfy. The function body describes relationships between inputs that the prover guarantees hold true. Circuit functions are declared with the `circuit` keyword.
+
+```
+circuit function transfer(amount: Uint<64>, recipient: Bytes<32>): Bytes<32> {
+    // constraint logic here
 }
 ```
 
-### Privacy Annotations
-```compact
-private   // Hidden in zero-knowledge proof
-public    // Visible to all
-witness   // Private input for proof generation
+Circuit functions can read from and write to ledger state. They can call other circuit functions and built-in cryptographic functions. The constraints they define become part of the proof that validators verify.
+
+### Witness Functions
+
+A witness function computes witness values without adding constraints to the circuit. It is used for helper computations that prepare data for use in circuit functions. Witness functions are declared with the `witness` keyword.
+
+```
+witness function compute_hash(data: Bytes<64>): Bytes<32> {
+    // computation without adding constraints
+}
+```
+
+Witness functions run only on the prover's machine during proof generation. They do not affect what validators verify. They are useful for computing intermediate values that would be expensive or unnecessary to encode as circuit constraints.
+
+### Function Visibility
+
+Functions can be marked as `public` or left private (the default). Public functions can be called from outside the module. Private functions are only callable within the module where they are defined. The contract's public functions form its external interface and correspond to the endpoints that transactions can invoke.
+
+## Variables
+
+### Declaring Variables
+
+Variables in Compact are declared with the `let` keyword. The type can be specified explicitly or inferred from the initializer.
+
+```
+let amount: Uint<64> = 100;
+let recipient = 0xabcdef;  // type inferred as Bytes
+```
+
+Variables are immutable by default. Once assigned, their value cannot change within the scope where they are defined. This immutability is important for ZK circuits because constraints are declarative rather than imperative. Each variable represents a fixed value in the constraint system.
+
+### Scope and Shadowing
+
+Variables have block scope. A variable declared inside a block is only visible within that block. Variables can be shadowed, meaning a new variable with the same name can be declared in an inner scope. The inner variable hides the outer one within its scope.
+
+```
+let x = 5;
+{
+    let x = 10;  // shadows outer x
+    // x is 10 here
+}
+// x is 5 here
 ```
 
 ## Control Flow
 
-### If Expressions
-```compact
-let max = if x > y { x } else { y };
+### Conditional Statements
 
-// If without else returns Unit
-if condition {
-  doSomething();
-}
+Compact supports `if` and `else` for conditional execution. Within a circuit function, both branches of a conditional are always evaluated (because circuits cannot have dynamic control flow). The result is selected based on the condition.
+
 ```
-
-### Match Expressions
-```compact
-match value {
-  Some(x) => x,
-  None => 0
-}
-
-match number {
-  0 => "zero",
-  1 => "one",
-  _ => "other"  // Default case
+if amount > 0 {
+    state = state + amount;
+} else {
+    state = state;
 }
 ```
 
 ### Loops
-```compact
-// For loop
+
+Compact supports `for` loops with a fixed number of iterations. The loop bound must be known at compile time. Dynamic loops (where the iteration count depends on runtime values) are not allowed because circuits must have a fixed, known structure.
+
+```
 for i in 0..10 {
-  process(i);
-}
-
-// While loop
-while condition {
-  doWork();
-}
-
-// Loop with break
-loop {
-  if done { break; }
-  work();
+    // this loop runs exactly 10 times
 }
 ```
 
-## Operators
+Loops in circuit functions are unrolled at compile time. Each iteration becomes a separate set of constraints. Large loop bounds can produce very large circuits, so use them sparingly.
 
-### Arithmetic
-```compact
-+  -  *  /  %           // Add, subtract, multiply, divide, modulo
+## Type Annotations
+
+Type annotations in Compact use angle brackets for generic parameters and explicit type names. The language is statically typed, and the compiler checks all types at compile time.
+
+### Explicit Annotations
+
+```
+let balance: Uint<128> = 0;
+let addr: Bytes<32> = zero();
+let flag: Boolean = true;
 ```
 
-### Comparison
-```compact
-==  !=  <  >  <=  >=    // Equality and ordering
+### Type Inference
+
+When the type can be determined from context, the annotation can be omitted. The compiler infers types from literal values, function return types, and usage context.
+
+```
+let balance = 0;           // inferred as Uint<64>
+let addr = zero();         // inferred from function signature
+let hash = hash(data);     // inferred from hash return type
 ```
 
-### Logical
-```compact
-&&  ||  !               // And, or, not
+## Import and Export Patterns
+
+### Importing Modules
+
+The `import` statement brings declarations from another module into the current module's scope.
+
+```
+import * as token from "./token.compact";
+import { transfer, mint } from "./token.compact";
+import { FungibleToken } from "@openzeppelin/token.compact";
 ```
 
-### Bitwise
-```compact
-&  |  ^  <<  >>         // And, or, xor, left shift, right shift
+The first form imports everything from the module under a namespace. The second form imports specific named declarations. The third form imports from a package dependency using the package name.
+
+### Exporting Declarations
+
+All public functions, types, and constants are automatically available for import by other modules. There is no separate `export` keyword. Marking a function as `public` makes it both callable externally and importable.
+
+## Code Organization
+
+### One Module Per File
+
+Each Compact file should contain a single module. The filename must match the module name. This convention makes it easy to find the source code for a given module and keeps the module graph aligned with the filesystem.
+
+### Directory Structure
+
+A typical Compact project organizes source files under a `src/` directory. Related modules can be grouped into subdirectories. The compiler resolves relative imports based on the filesystem path.
+
+```
+src/
+  main.compact
+  token/
+    fungible.compact
+    governance.compact
+  utils/
+    math.compact
+    crypto.compact
 ```
 
-## Modules and Imports
+### Contract Entry Point
 
-### Defining Modules
-```compact
-mod math {
-  pub fn square(x: U32) -> U32 {
-    x * x
-  }
-}
+Every deployable contract must have a module whose public functions serve as the contract's external interface. This is typically the `main` module. When a transaction targets a contract, it calls one of these public functions by name.
+
+### Constants
+
+Constant values are declared with the `const` keyword. They must have explicit type annotations and their values must be computable at compile time.
+
+```
+const MAX_SUPPLY: Uint<128> = 1_000_000;
+const FEE_DENOMINATOR: Uint<64> = 10_000;
 ```
 
-### Importing
-```compact
-use std::crypto::hash;
-use math::square;
-
-// Import multiple
-use std::crypto::{hash, commit};
-
-// Import all
-use math::*;
-```
-
-## Structs
-
-### Definition
-```compact
-struct User {
-  id: U64,
-  name: String,
-  balance: Field
-}
-```
-
-### Construction
-```compact
-let user = User {
-  id: 1,
-  name: "Alice",
-  balance: 1000
-};
-```
-
-### Methods
-```compact
-impl User {
-  fn new(id: U64, name: String) -> User {
-    User { id, name, balance: 0 }
-  }
-  
-  fn deposit(&mut self, amount: Field) {
-    self.balance += amount;
-  }
-}
-```
-
-## Enums
-
-### Definition
-```compact
-enum Result<T, E> {
-  Ok(T),
-  Err(E)
-}
-```
-
-### Pattern Matching
-```compact
-match result {
-  Ok(value) => handleSuccess(value),
-  Err(error) => handleError(error)
-}
-```
-
-## Generics
-
-### Generic Functions
-```compact
-fn identity<T>(x: T) -> T {
-  x
-}
-```
-
-### Generic Structs
-```compact
-struct Container<T> {
-  value: T
-}
-```
-
-### Trait Bounds
-```compact
-fn process<T: Hashable>(item: T) -> Field {
-  hash(item)
-}
-```
-
-## Traits
-
-### Definition
-```compact
-trait Hashable {
-  fn hash(&self) -> Field;
-}
-```
-
-### Implementation
-```compact
-impl Hashable for User {
-  fn hash(&self) -> Field {
-    hash(self.id)
-  }
-}
-```
-
-## Error Handling
-
-### Result Type
-```compact
-fn divide(a: U32, b: U32) -> Result<U32, String> {
-  if b == 0 {
-    Err("Division by zero")
-  } else {
-    Ok(a / b)
-  }
-}
-```
-
-### Option Type
-```compact
-fn find(arr: [U32], target: U32) -> Option<U32> {
-  for i in 0..arr.len() {
-    if arr[i] == target {
-      return Some(i);
-    }
-  }
-  None
-}
-```
-
-## Privacy-Specific Features
-
-### Private Computations
-```compact
-circuit privateBalance(
-  private balance: Field,
-  public threshold: Field
-) -> Bool {
-  // Prove balance > threshold without revealing balance
-  balance > threshold
-}
-```
-
-### Commitments
-```compact
-let commitment = commit(secretValue, randomness);
-// Commitment hides value but can be verified later
-```
-
-### Nullifiers
-```compact
-let nullifier = hash(secretKey, coinId);
-// Prevents double-spending without revealing coin
-```
-
-## Contract Structure
-
-### Complete Contract Example
-```compact
-contract Token {
-  // State
-  state {
-    totalSupply: Field,
-    balances: Map<Address, Field>
-  }
-  
-  // Constructor
-  init(initialSupply: Field) {
-    totalSupply = initialSupply;
-  }
-  
-  // Public function
-  pub fn transfer(to: Address, amount: Field) {
-    require(balances[msg.sender] >= amount);
-    balances[msg.sender] -= amount;
-    balances[to] += amount;
-  }
-  
-  // Private function
-  circuit privateTransfer(
-    private from: Address,
-    private to: Address,
-    private amount: Field
-  ) {
-    // Private transfer logic with ZK proofs
-  }
-}
-```
-
-## Best Practices
-
-### Naming Conventions
-- Types: `PascalCase`
-- Functions: `snake_case`
-- Constants: `SCREAMING_SNAKE_CASE`
-- Variables: `snake_case`
-
-### Code Organization
-```compact
-// 1. Imports
-use std::crypto::*;
-
-// 2. Type definitions
-struct MyType { ... }
-
-// 3. Constants
-const MAX_VALUE: U32 = 1000;
-
-// 4. Functions
-fn myFunction() { ... }
-
-// 5. Circuits
-circuit myCircuit() { ... }
-```
-
-### Documentation
-```compact
-/// Calculates the square of a number
-/// 
-/// # Arguments
-/// * `x` - The number to square
-/// 
-/// # Returns
-/// The square of x
-fn square(x: U32) -> U32 {
-  x * x
-}
-```
+Constants can be used anywhere a compile-time value is expected, including as loop bounds and type parameters.

@@ -854,4 +854,20 @@ Implement proper loading states for all asynchronous operations. Transaction sub
 
 Validate transaction inputs before creating unproven transactions. Invalid inputs result in failed transactions that still consume DUST tokens.
 
+## Cross Reference Skills
+
+This skill covers DApp frontend development. For related areas see these skills.
+
+- **midnight-concepts** — Privacy model, selective disclosure, user data handling
+- **midnight-compact** — Contract development that powers the frontend
+- **midnight-api** — Providers, integration patterns, deployment APIs
+- **midnight-network** — Network endpoints, indexer queries for the UI
+- **midnight-wallet** — Wallet SDK, DUST, key management behind the UI
+- **midnight-expert** — Frontend health checks, version compatibility
+
+### Inline References
+
+- DApp connector API: `references/connector-api.md`
+- Dust-free payment flow: `references/dust-free-flow.md`
+
 Test on multiple networks before deploying to mainnet. Behavior differences between networks can cause unexpected failures in production.

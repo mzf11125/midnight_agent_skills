@@ -1,5 +1,0 @@
-{
-  "name": "compact-core",
-  "description": "Full Compact smart contract development lifecycle. Write, review, debug, test, and deploy privacy-preserving contracts on Midnight Network.",
-  "tags": ["midnight", "compact", "smart-contracts", "zk-circuits", "programming", "privacy", "typescript"]
-}

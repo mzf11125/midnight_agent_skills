@@ -566,6 +566,24 @@ When using local networks (like `undeployed`), ensure Lace is configured correct
 2. Select **Undeployed** network (not Preprod or Mainnet)
 3. Click Save configuration
 
+## Cross Reference Skills
+
+This skill covers API integration and DApp plumbing. For related areas see these skills.
+
+- **midnight-concepts** — Architecture, privacy, ZK proofs, tokenomics
+- **midnight-compact** — Smart contract syntax, types, ledger operations, ZK patterns
+- **midnight-network** — Node operations, indexer setup, proof server deployment
+- **midnight-wallet** — Wallet SDK, shielded/unshielded transactions, key management
+- **midnight-dapp-dev** — Frontend scaffolds, wallet connect UI, provider setup
+- **midnight-expert** — Health diagnostics, fact checking, version compatibility
+
+### Inline References
+
+- Verification methods: `references/verification-methods.md`
+- Code quality pipeline: `references/quality-pipeline.md`
+- Error catalog: `references/error-catalog.md`
+- Plugin infrastructure: `references/infrastructure.md`
+
 **Error: "Expected undeployed address, got Preprod address"**
 - This means you're trying to use a Preprod address in the Undeployed network
 - Switch Lace to use Undeployed network to get correct addresses

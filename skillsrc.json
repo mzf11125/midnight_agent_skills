@@ -1,29 +1,16 @@
 {
   "name": "midnight-agent-skills",
-  "version": "3.0.0",
-  "description": "MIDNIGHT EXPERT: 20 modular agent skills for building on Midnight Network",
+  "version": "3.1.0",
+  "description": "7 modular agent skills for building on Midnight Network",
   "author": "Midnight Network Community",
   "repository": "https://github.com/mzf11125/midnight_agent_skills",
   "skills": [
-    "core-concepts",
-    "compact-core",
-    "compact-examples",
-    "compact-cli-dev",
-    "midnight-dapp-dev",
-    "midnight-wallet",
-    "midnight-fact-check",
-    "midnight-node",
-    "midnight-indexer",
-    "proof-server",
-    "midnight-tooling",
-    "midnight-expert",
-    "midnight-verify",
-    "midnight-cq",
-    "midnight-status-codes",
-    "midnight-plugin-utils",
     "midnight-concepts",
     "midnight-compact",
     "midnight-api",
-    "midnight-network"
+    "midnight-network",
+    "midnight-wallet",
+    "midnight-dapp-dev",
+    "midnight-expert"
   ]
 }

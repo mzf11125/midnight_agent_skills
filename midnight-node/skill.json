@@ -1,5 +1,0 @@
-{
-  "name": "midnight-node",
-  "description": "Node reference for Midnight Network. Substrate-based architecture, runtime pallets, RPC interface, configuration, operations, and governance.",
-  "tags": ["midnight", "node", "substrate", "validator", "rpc", "boot-node", "full-node", "cardano"]
-}

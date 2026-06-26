@@ -1,5 +1,0 @@
-{
-  "name": "midnight-fact-check",
-  "description": "Fact-checking pipeline for Midnight documentation. Extract claims from docs, classify by domain, verify accuracy, and generate reports.",
-  "tags": ["midnight", "fact-check", "verification", "documentation", "accuracy", "claims"]
-}
